@@ -1,4 +1,8 @@
+// First Load
+import 'reflect-metadata';
 require('dotenv').config();
+
+// Next
 import firebase from 'firebase';
 import App from './App';
 
@@ -18,16 +22,17 @@ const firebaseAuth = {
 const AppStart = async () => {
     // Firebase Authentication
     const firebaseApp = firebase.initializeApp(firebaseConfig);
-
+    var useCredential: firebase.auth.UserCredential;
     try {
-        const useCredential: firebase.auth.UserCredential = await firebaseApp.auth().signInWithEmailAndPassword(firebaseAuth!.user, firebaseAuth!.pass);
+        useCredential = await firebaseApp.auth().signInWithEmailAndPassword(firebaseAuth!.user, firebaseAuth!.pass);
+        
     } catch(err) {
         console.log(`Unable to authenticate with Firebase: `);
         console.log(err);
 
         return;
     }
-    console.log(`[Index] Firebase logged in as ${firebaseAuth.user}`);
+    console.log(`[Index] Firebase logged in as ${useCredential.user!.email}`);
    
     App.listen(process.env.APP_PORT_HTTP, () => {
         console.log(`[Index] App started on port ${process.env.APP_PORT_HTTP}`);

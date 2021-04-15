@@ -17,6 +17,8 @@
     "express-validator": "^6.10.0",
     "firebase": "^8.4.1",
     "jsonwebtoken": "^8.5.1",
-    "ts-node-dev": "^1.1.6"
+    "reflect-metadata": "^0.1.13",
+    "ts-node-dev": "^1.1.6",
+    "typedi": "^0.10.0"
   }
 }
