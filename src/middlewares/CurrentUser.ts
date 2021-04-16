@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { BadRequestError } from '../errors/BadRequestError';
-import { InternalServerError } from '../errors/InternalServerError';
 import firebase from 'firebase';
 
 interface IUserPayload {
