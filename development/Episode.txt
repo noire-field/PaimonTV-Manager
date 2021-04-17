@@ -1,0 +1,4 @@
+Episode Status:
+0 - Require processing
+1 - Being processed
+2 - Ready
