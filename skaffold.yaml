@@ -1,0 +1,26 @@
+apiVersion: skaffold/v2alpha3
+kind: Config
+deploy:
+  kubectl:
+      manifests:
+        - ./infra/k8s/*
+build:
+  local:
+    push: false
+  artifacts:
+    - image: noirefield/paimontv-manager-server
+      context: server
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.ts'
+            dest: .
+    - image: noirefield/paimontv-manager-client
+      context: client
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.js*'
+            dest: .
