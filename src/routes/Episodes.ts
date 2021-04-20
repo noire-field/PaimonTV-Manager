@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 import { v4 as uuidv4 } from 'uuid';
 import { InternalServerError } from '../errors/InternalServerError';
 import { NotFoundError } from '../errors/NotFoundError';
@@ -7,6 +7,7 @@ import { CurrentUser } from '../middlewares/CurrentUser';
 import { ValidateRequest } from '../middlewares/ValidateRequest';
 import { RequireAuth } from '../middlewares/RequireAuth';
 import { RequireMovie } from '../middlewares/RequireMovie';
+import { BadRequestError } from '../errors/BadRequestError';
 
 const router = express.Router();
 
@@ -29,9 +30,9 @@ router.get('/:movieId/episodes', CurrentUser, RequireAuth, RequireMovie, async (
 
 // Add an episode
 router.post('/:movieId/episodes', [
-    body('id').isNumeric().isLength({ min: 1, max: 999 }).withMessage('Id must be from 1 to 999'),
+    body('id').isNumeric().isFloat({ min: 1, max: 999 }).withMessage('Id must be from 1 to 999'),
     body('title').isLength({ min: 1, max: 64 }).withMessage('Title must be from 1 to 64 characters'),
-    body('duration').isNumeric().isLength({ min: 0, max: 99999 }).withMessage('Duration must be a number in second').default(0),
+    body('duration').isNumeric().isFloat({ min: 0, max: 99999 }).withMessage('Duration must be a number in second').default(0),
     body('url').isURL().withMessage('Url must be valid'),
     body('status').isNumeric().isIn([0, 2]).withMessage('Status is invalid')
 ],
@@ -47,7 +48,12 @@ async (req: Request, res: Response) => {
         episodes = movieData.episodes;
     }
     
+    const epId = `ep${id}` as keyof typeof episodes;
+
     // Find if the episode is already there?
+    if(episodes[epId]) {
+        throw new BadRequestError('This episode id already exists');
+    }
     
     // Add it to episode list
     const episodeData = { 
@@ -58,8 +64,7 @@ async (req: Request, res: Response) => {
         status
     };
 
-    const epId = `ep${id}`;
-
+    
     try {
         await movieRef!.child('episodes').child(epId).set({
             ...episodeData
@@ -75,53 +80,90 @@ async (req: Request, res: Response) => {
     });
 });
 
-/*
 // Update
-router.put('/:id', [
+router.put('/:movieId/episodes/:episodeId', [
+    param('episodeId').isNumeric().isFloat({ min: 1, max: 999 }).withMessage('Id must be from 1 to 999'),
     body('title').isLength({ min: 1, max: 64 }).withMessage('Title must be from 1 to 64 characters'),
-    body('subTitle').isLength({ min: 0, max: 64 }).withMessage('Sub title must be from 0 to 64 characters').default(''),
-    body('thumbnail').isURL().withMessage('Thumbnail must be an image url'),
-    body('year').isLength({ min: 1, max: 32}).withMessage('Year must be from 1 to 32 characters')
+    body('duration').isNumeric().isFloat({ min: 0, max: 99999 }).withMessage('Duration must be a number in second').default(0),
+    body('progress').isNumeric().isFloat({ min: 0, max: 99999 }).withMessage('Progress must be a number in second').default(0),
+    body('url').isURL().withMessage('Url must be valid'),
+    body('status').isNumeric().isIn([0, 2]).withMessage('Status is invalid')
 ],
-CurrentUser, RequireAuth, ValidateRequest, 
+CurrentUser, RequireAuth, RequireMovie, ValidateRequest, 
 async (req: Request, res: Response) => {
-    const movieId = req.params.id;
-    const { title, subTitle, thumbnail, year } = req.body;
+    const id = req.params.episodeId;
+    const { movieData: rawMovieData, movieRef } = req;
+    const { title, duration, progress, url, status } = req.body;
 
-    const movieData = {
-        title, 
-        subTitle, 
-        thumbnail, 
-        year
-    };
+    var movieData = rawMovieData.val();
+    var episodes = {};
+
+    if(movieData.episodes && Object.keys(movieData.episodes).length > 0) {
+        episodes = movieData.episodes;
+    }
     
-    var movieRef = req.userFirebaseRef.child('movies').child(movieId);
+    const epId = `ep${id}` as keyof typeof episodes;
+    
+    if(!episodes[epId])
+        throw new BadRequestError('This episode id does not exist');
+    
+    // Make the update
+    const episodeData = { 
+        title,
+        duration,
+        progress,
+        url,
+        status
+    };
 
-    const movie = await movieRef.get();
-    if(!movie.exists()) throw new NotFoundError();
+    // Is this episode in the progressing list?
+    // Todo: If yes, block it.
 
-    await movieRef.update(movieData);
+    // Continue
+    try {
+        await movieRef!.child('episodes').child(epId).set({
+            ...episodeData
+        });
+    } catch(e) {
+        console.log(e);
+        throw new InternalServerError('Unable to update episode (Firebase)');
+    }
 
     return res.status(200).send({
         success: true,
-        movie: { id: movieId, ...movieData }
+        movie: { id: epId, ...episodeData }
     });
 });
 
 // Delete
-router.delete('/:id', CurrentUser, RequireAuth, async (req: Request, res: Response) => {
-    const movieId = req.params.id;
+router.delete('/:movieId/episodes/:episodeId', [
+    param('episodeId').isNumeric().isFloat({ min: 1, max: 999 }).withMessage('Id must be from 1 to 999'),
+],
+CurrentUser, RequireAuth, RequireMovie, ValidateRequest,
+async (req: Request, res: Response) => {
+    const id = req.params.episodeId;
+    const { movieData: rawMovieData, movieRef } = req;
+
+    var movieData = rawMovieData.val();
+    var episodes = {};
+
+    if(movieData.episodes && Object.keys(movieData.episodes).length > 0) {
+        episodes = movieData.episodes;
+    }
     
-    var movieRef = req.userFirebaseRef.child('movies').child(movieId);
+    const epId = `ep${id}` as keyof typeof episodes;
+    
+    if(!episodes[epId])
+        throw new BadRequestError('This episode id does not exist');
+    
+    // Is this episode in the progressing list?
+    // Todo: If yes, block it.
 
-    const movie = await movieRef.get();
-    if(!movie.exists()) throw new NotFoundError();
-
-    movieRef.set(null);
+    movieRef!.child('episodes').child(epId).set(null);
 
     return res.status(200).send({
         success: true
     });
-});*/
+});
 
 export default router;
