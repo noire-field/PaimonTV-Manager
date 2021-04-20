@@ -11,7 +11,7 @@ function Login(props) {
                         <div className="card-body py-4">
                             <div className="row">
                                 <div className="col-lg-5 text-center">
-                                    <img src={paimonLetter} alt="Paimon Gatekeeper" className="paimon-auth-img py-md-2"/>
+                                    <img src={paimonLetter} alt="Paimon Gatekeeper" className="img-fluid paimon-auth-img mb-2"/>
                                 </div>
                                 <div className="col-lg-7">
                                     <form>
