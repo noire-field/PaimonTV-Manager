@@ -9,7 +9,7 @@ function LibrarySection(props) {
                 <h3 className="text-white ms-2 me-2">{props.title}</h3>
                 <button className="btn btn-danger pbg-accent btn-sm px-2 py-1"><i class="fas fa-edit me-1"></i>Edit</button>
             </div>
-            <MovieList movies={props.movies}/>
+            <MovieList movies={props.movies} className="justify-content-lg-start justify-content-center"/>
         </div>
     );
 }

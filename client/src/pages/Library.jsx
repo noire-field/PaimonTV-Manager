@@ -7,7 +7,7 @@ import EditSection from './Library/EditSection';
 function Library(props) {
     return (
         <div className="container-fluid pt-5 library">
-            <EditSection/>
+            <Main/>
         </div>
     );
 }
