@@ -24,3 +24,9 @@ build:
         manual:
           - src: 'src/**/*.js*'
             dest: .
+          - src: 'src/**/*.scss'
+            dest: .
+          - src: 'src/**/*.css'
+            dest: .
+          - src: 'src/**/*.html'
+            dest: .

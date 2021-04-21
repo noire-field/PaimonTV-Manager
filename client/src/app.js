@@ -2,12 +2,12 @@ import { React } from 'react';
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import './assets/scss/styles.scss';
 
-import Login from './pages/Login';
+import MainScreen from './containers/MainScreen';
 
 
 function App() {
 
-    return <Login/>
+    return <MainScreen/>
     /*
     return (
         <Router>
