@@ -5,6 +5,7 @@ import MyMovies from '../pages/MyMovies';
 import Queue from '../pages/Queue';
 
 function MainScreen(props) {
+    console.log(`[App] > [MainScreen] Render`);
     return (
         <div className="main-screen pbg-primary">
             <Navbar/>
@@ -13,4 +14,4 @@ function MainScreen(props) {
     )
 }
 
-export default MainScreen;
+export default React.memo(MainScreen);

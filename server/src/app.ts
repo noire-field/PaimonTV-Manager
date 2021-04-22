@@ -16,10 +16,10 @@ app.set('trust proxy', true);
 
 app.use(json());
 
-app.use('/auth', AuthRouter);
-app.use('/series', SeriesRouter);
-app.use('/movies', MoviesRouter);
-app.use('/movies', EpisodesRouter);
+app.use('/api/auth', AuthRouter);
+app.use('/api/series', SeriesRouter);
+app.use('/api/movies', MoviesRouter);
+app.use('/api/movies', EpisodesRouter);
 
 app.all('*', () => { throw new NotFoundError }); 
 app.use(ErrorHandler);

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { CustomError } from '../errors/CustomError';
+import { JsonWebTokenError } from 'jsonwebtoken';
 
 export const ErrorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
     if(err instanceof CustomError)
@@ -12,6 +13,14 @@ export const ErrorHandler = (err: Error, req: Request, res: Response, next: Next
             success: false,
             errors: [{
                 message: "Bad Request (SyntaxError)"
+            }]
+        });
+    }
+    if(err instanceof JsonWebTokenError) {
+        return res.status(400).send({ 
+            success: false,
+            errors: [{
+                message: "Invalid token"
             }]
         });
     }

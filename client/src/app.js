@@ -1,43 +1,84 @@
-import { React, useEffect } from 'react';
+import './assets/scss/styles.scss';
+
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import './assets/scss/styles.scss';
 import { CSSTransition } from 'react-transition-group'
+import Cookies from 'js-cookie';
 
-import Login from './pages/Login';
+import axios from './utils/axios';
+
+import { AppSetLoading, AppSetState } from './store/actions/app.action';
+import { UserSignIn } from './store/actions/user.action';
+
+import LoginScreen from './pages/LoginScreen';
 import MainScreen from './containers/MainScreen';
 import Loading from './components/Loading';
 
 
 function App() {
     const appState = useSelector(state => state.app.appState);
-    const auth = useSelector(state => state.user.auth);
+    const loading = useSelector(state => state.app.loading);
     const dispatch = useDispatch();
 
-    useEffect(() => {
-        switch(appState) {
-            case 0: // Not loaded
-
-                break;
-        }
-    }, []);
-
-    const clickMe = function(e) {
-        dispatch({
-            type: 'SET_AUTH',
-            payload: !auth
-        })
+    var renderContent;
+    switch(appState) {
+        case 0: // Not Loaded anything
+            break;
+        case 1: // Not logged in
+            renderContent = <LoginScreen/>
+            break;
+        case 2: // Logged in
+            renderContent = <MainScreen/>
+            break;
     }
 
-    console.log(auth);
+    useEffect(async () => {
+        if(appState != 0) return;
+
+        dispatch(AppSetLoading(true));
+
+        var timeoutHandler = null;
+
+        // Fetch JWT cookie from cookie
+        const jwt = Cookies.get('JWT');
+        if(jwt) {
+            try {
+                const { data } = await axios.post('/auth/verify-token', {
+                    token: jwt
+                });
+
+                dispatch(AppSetLoading(false));
+                dispatch(UserSignIn(data.user.id, data.user.email, jwt));
+                dispatch(AppSetState(2));
+            } catch(err) {
+                Cookies.remove('JWT');
+                dispatch(AppSetLoading(false));
+                dispatch(AppSetState(1));
+            }
+        } else { // No Key? Not Logged?
+            dispatch(AppSetState(1));
+
+            // Just for fun, LOL!
+            timeoutHandler = setTimeout(() => {
+                dispatch(AppSetLoading(false));
+            }, 1000);
+        }
+
+        return () => {
+            if(timeoutHandler) clearTimeout(timeoutHandler);
+        }
+    }, [appState]); // First Load
+
+    console.log("[App] Render");
 
     return (
-        <div onClick={clickMe}>
-            <MainScreen/>
-            <CSSTransition in={auth} timeout={250} classNames="my-node" unmountOnExit>
-            <Loading/>
+        <React.Fragment>
+            {renderContent}
+            <CSSTransition in={loading} timeout={250} classNames="my-node" unmountOnExit>
+                <Loading/>
             </CSSTransition>
-        </div>
+        </React.Fragment>
     )
     /*
     return (

@@ -1,6 +1,21 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import Cookies from 'js-cookie';
+
+import { AppSetState } from './../store/actions/app.action';
+import { UserSignOut } from './../store/actions/user.action';
 
 function Navbar(props) {
+    const dispatch = useDispatch();
+
+    const onSignOut = (e) => {
+        e.preventDefault();
+
+        dispatch(UserSignOut());
+        dispatch(AppSetState(0));
+        Cookies.remove('JWT');
+    }
+
     return (
         <nav className="navbar sticky-top navbar-expand-lg navbar-light bg-light border shadow">
             <div className="container-fluid">
@@ -57,8 +72,7 @@ function Navbar(props) {
                                 <strong className="d-none d-sm-block ms-1 me-1">Noire Bladefield</strong>
                             </a>
                             <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
-                                <li><a className="dropdown-item" href="#">Logout</a>
-                                </li>
+                                <li><a className="dropdown-item" onClick={onSignOut} href="#">Logout</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -69,4 +83,4 @@ function Navbar(props) {
     );
 }
 
-export default Navbar;
+export default React.memo(Navbar);

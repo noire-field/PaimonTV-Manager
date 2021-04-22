@@ -1,10 +1,23 @@
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
-import jwt from 'jsonwebtoken';
+import jwt, { JsonWebTokenError } from 'jsonwebtoken';
 import { BadRequestError } from '../errors/BadRequestError';
 import { ValidateRequest } from './../middlewares/ValidateRequest'
 
 const router = express.Router();
+
+router.post('/verify-token', [
+    body('token').notEmpty().withMessage('Token must be valid'),
+], ValidateRequest, async (req: Request, res: Response) => {
+    const { token } = req.body;
+
+    const verification = jwt.verify(token, process.env.JWT_KEY!);
+
+    return res.status(200).send({
+        success: true,
+        user: verification
+    })
+});
 
 router.post('/sign-in', [
     body('email').isEmail().withMessage('Email must be valid'),
@@ -28,7 +41,11 @@ router.post('/sign-in', [
 
     return res.status(200).send({
         success: true,
-        token
+        user: {
+            id: userId,
+            email,
+            token
+        }
     })
 });
 
