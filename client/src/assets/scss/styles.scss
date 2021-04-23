@@ -160,19 +160,53 @@ $color-accent-dark: #bd2722;
     }
 }
 
-.my-node-enter {
+// React CSSTransition
+
+.anim-slideup-loading-enter {
     opacity: 0;
     transform: translateY(50%);
-  }
-  .my-node-enter-active {
+}
+.anim-slideup-loading-enter-active {
     opacity: 1;
     transform: translateY(0%);
     transition: all 250ms;
-  }
-  .my-node-exit {
+}
+.anim-slideup-loading-exit {
     opacity: 1;
-  }
-  .my-node-exit-active {
+}
+.anim-slideup-loading-exit-active {
     opacity: 0;
     transition: all 250ms;
-  }
+}
+
+.anim-fading-enter {
+    opacity: 0;
+}
+.anim-fading-enter-active {
+    opacity: 1;
+    transition: all 250ms;
+}
+.anim-fading-exit {
+    opacity: 1;
+}
+.anim-fading-active {
+    opacity: 0;
+    transition: all 250ms;
+}
+
+.fade-in-enter{
+    opacity: 0;
+ }
+ .fade-in-exit{
+    opacity: 0;
+ }
+ .fade-in-enter-active{
+    opacity: 1;
+ }
+ .fade-in-exit-active{
+    opacity: 0;
+ }
+ .fade-in-enter-active,
+ .fade-in-exit-active{
+    transition: opacity 500ms;
+ }

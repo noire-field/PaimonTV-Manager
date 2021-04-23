@@ -11,10 +11,19 @@ const router = express.Router();
 
 // Get list
 router.get('/', CurrentUser, RequireAuth, async (req: Request, res: Response) => {
-    var userFirebaseRef = req.userFirebaseRef;
-    var data = await userFirebaseRef.get();
+    var seriesRef = req.userFirebaseRef.child('series');
+    var series = await seriesRef.get();
 
-    res.status(200).send(data);
+    var data: any = [];
+
+    if(series.exists()) {
+        data = series;
+    }
+
+    res.status(200).send({
+        success: true,
+        series: data
+    });
 });
 
 // Add a series

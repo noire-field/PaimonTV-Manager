@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect} from 'react';
+import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router';
 
 import LibrarySection from './../../components/LibrarySection';
 
-const myList = {
+import { SeriesFetch } from './../../store/actions/series.action';
+
+var myList = {
     title: "My List",
     movies: [
         {
@@ -184,14 +188,22 @@ const sections = [
 ];
 
 function Main(props) {
+    const dispatch = useDispatch();
+    const history = useHistory();
+
+    useEffect(() => {
+        dispatch(SeriesFetch());
+    }, []);
+
     const renderedSections = sections.map((s) => {
         return <LibrarySection title={s.title} movies={s.movies}/>
     })
+
     return (
         <React.Fragment>
             <LibrarySection title={myList.title} movies={myList.movies}/>
-            <div className="mx-2 add-section-bg mb-3">
-                <span><i class="fas fa-plus-circle me-1"></i>Add section</span>
+            <div onClick={() => history.push("/library/add-section")} className="mx-2 add-section-bg mb-3">
+                <span><i className="fas fa-plus-circle me-1"></i>Add section</span>
             </div>
             {renderedSections}
         </React.Fragment>

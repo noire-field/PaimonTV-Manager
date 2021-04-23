@@ -2,8 +2,8 @@ import './assets/scss/styles.scss';
 
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import { CSSTransition } from 'react-transition-group'
+import { CSSTransition, SwitchTransition } from 'react-transition-group'
+import { BrowserRouter as Router } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
 import axios from './utils/axios';
@@ -20,18 +20,6 @@ function App() {
     const appState = useSelector(state => state.app.appState);
     const loading = useSelector(state => state.app.loading);
     const dispatch = useDispatch();
-
-    var renderContent;
-    switch(appState) {
-        case 0: // Not Loaded anything
-            break;
-        case 1: // Not logged in
-            renderContent = <LoginScreen/>
-            break;
-        case 2: // Logged in
-            renderContent = <MainScreen/>
-            break;
-    }
 
     useEffect(async () => {
         if(appState != 0) return;
@@ -62,7 +50,7 @@ function App() {
             // Just for fun, LOL!
             timeoutHandler = setTimeout(() => {
                 dispatch(AppSetLoading(false));
-            }, 1000);
+            }, 500);
         }
 
         return () => {
@@ -74,45 +62,24 @@ function App() {
 
     return (
         <React.Fragment>
-            {renderContent}
-            <CSSTransition in={loading} timeout={250} classNames="my-node" unmountOnExit>
+            { appState > 0 &&
+            <SwitchTransition mode="out-in">
+                <CSSTransition
+                    key={appState}
+                    addEndListener={(node, done) => {
+                        node.addEventListener("transitionend", done, false);
+                    }}
+                    classNames="fade-in"
+                >
+                    { appState == 1 ? <LoginScreen/> : <Router><MainScreen/></Router> }
+                </CSSTransition>
+            </SwitchTransition>
+            }
+            <CSSTransition in={loading} timeout={250} classNames="anim-slideup-loading" unmountOnExit>
                 <Loading/>
             </CSSTransition>
         </React.Fragment>
     )
-    /*
-    return (
-        <Router>
-            <div>
-                <nav>
-                <ul>
-                    <li>
-                    <Link to="/">Home</Link>
-                    </li>
-                    <li>
-                    <Link to="/about">About</Link>
-                    </li>
-                    <li>
-                    <Link to="/users">Users</Link>
-                    </li>
-                </ul>
-                </nav>
-
-            
-                <Switch>
-                <Route path="/about">
-                    <div>This is about</div>
-                </Route>
-                <Route path="/users">
-                    <div>This is user</div>
-                </Route>
-                <Route path="/">
-                    <div>This is home</div>
-                </Route>
-                </Switch>
-            </div>
-        </Router>
-    )*/
 }
 
 export default App;

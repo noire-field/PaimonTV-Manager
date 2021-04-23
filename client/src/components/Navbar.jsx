@@ -1,12 +1,16 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import Cookies from 'js-cookie';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 
 import { AppSetState } from './../store/actions/app.action';
 import { UserSignOut } from './../store/actions/user.action';
 
 function Navbar(props) {
     const dispatch = useDispatch();
+    const location = useLocation();
+
+    console.log(location);
 
     const onSignOut = (e) => {
         e.preventDefault();
@@ -29,13 +33,13 @@ function Navbar(props) {
                 <div className="collapse navbar-collapse" id="navbar-main">
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                         <li className="nav-item">
-                            <a className="nav-link active" aria-current="page" href="#"><i class="fas fa-home me-1"></i>Home</a>
+                            <NavLink to="/library" className="nav-link" activeClassName="nav-link active"><i class="fas fa-home me-1"></i>Home</NavLink>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="#"><i className="fas fa-film me-1"></i>Movies</a>
+                            <NavLink to="/my-movies" className="nav-link" activeClassName="nav-link active"><i className="fas fa-film me-1"></i>Movies</NavLink>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="#"><i className="fas fa-cog me-1"></i>Queue</a>
+                            <NavLink to="/queue" className="nav-link" activeClassName="nav-link active"><i className="fas fa-cog me-1"></i>Queue</NavLink>
                         </li>
                         {/*
                         <li className="nav-item dropdown">
