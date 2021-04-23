@@ -9,7 +9,7 @@ function MyMovies(props) {
 
     return (
         <div className="my-movies pt-5">
-            <EditEpisode/>
+            <Main/>
         </div>
     );
 }

@@ -10,6 +10,7 @@ import axios from './utils/axios';
 
 import { AppSetLoading, AppSetState } from './store/actions/app.action';
 import { UserSignIn } from './store/actions/user.action';
+import { SeriesFetch } from './store/actions/series.action';
 
 import LoginScreen from './pages/LoginScreen';
 import MainScreen from './containers/MainScreen';
@@ -38,7 +39,7 @@ function App() {
 
                 dispatch(AppSetLoading(false));
                 dispatch(UserSignIn(data.user.id, data.user.email, jwt));
-                dispatch(AppSetState(2));
+                dispatch(SeriesFetch(true)); // true -> set app state to 2 after fetching done
             } catch(err) {
                 Cookies.remove('JWT');
                 dispatch(AppSetLoading(false));

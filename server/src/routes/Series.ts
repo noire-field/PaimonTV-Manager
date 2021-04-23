@@ -19,7 +19,7 @@ router.get('/', CurrentUser, RequireAuth, async (req: Request, res: Response) =>
     if(series.exists()) {
         data = series;
     }
-
+    
     res.status(200).send({
         success: true,
         series: data

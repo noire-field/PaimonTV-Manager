@@ -1,10 +1,11 @@
-import React, { useState, useEffect} from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 
 import LibrarySection from './../../components/LibrarySection';
-
 import { SeriesFetch } from './../../store/actions/series.action';
+
+import { SeriesToArray } from './../../utils/series';
 
 var myList = {
     title: "My List",
@@ -191,12 +192,20 @@ function Main(props) {
     const dispatch = useDispatch();
     const history = useHistory();
 
+    const series = useSelector(state => state.series.list);
+
     useEffect(() => {
         dispatch(SeriesFetch());
     }, []);
 
-    const renderedSections = sections.map((s) => {
-        return <LibrarySection title={s.title} movies={s.movies}/>
+    const seriesArray = SeriesToArray(series);
+    
+    const editSection = useCallback((id) => {
+        history.push(`/library/edit-section/${id}`);
+    });
+
+    const renderedSections = seriesArray.map((s) => {
+        return <LibrarySection key={s.id} id={s.id} title={s.title} movies={s.movies} onSectionEdit={editSection}/>
     })
 
     return (

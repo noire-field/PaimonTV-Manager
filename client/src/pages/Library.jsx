@@ -18,6 +18,9 @@ function Library(props) {
                         <Route path={`${match.path}/add-section`}>
                             <AddSection/>
                         </Route>
+                        <Route path={`${match.path}/edit-section/:id`}>
+                            <EditSection/>
+                        </Route>
                         <Route path={match.path}>
                             <Main/>
                         </Route>

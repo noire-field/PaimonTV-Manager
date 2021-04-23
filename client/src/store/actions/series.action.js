@@ -1,9 +1,9 @@
 import axios from './../../utils/axios';
 
 import * as Actions from '../actionTypes';
-import { AppSetLoading } from './app.action';
+import { AppSetLoading, AppSetState } from './app.action';
 
-export function SeriesFetch() {
+export function SeriesFetch(redirect=false) {
     return async (dispatch, getState) => {
         var userState = getState().user;
 
@@ -22,6 +22,7 @@ export function SeriesFetch() {
         }
 
         dispatch(AppSetLoading(false));
+        if(redirect) dispatch(AppSetState(2));
     };
 }
 
@@ -29,5 +30,12 @@ export function SeriesSet(series) {
     return {
         type: Actions.SERIES_SET,
         payload: series
+    }
+}
+
+export function SeriesSetSingle(id, series) {
+    return {
+        type: Actions.SERIES_SET_SINGLE,
+        payload: { id, series }
     }
 }

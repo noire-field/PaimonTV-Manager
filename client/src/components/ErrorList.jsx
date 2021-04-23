@@ -5,6 +5,7 @@ function ErrorList(props) {
 
     return (
         <div className="alert alert-danger mb-2">
+            <p className="mb-0 font-weight-bold">Errors:</p>
             <ul className="mb-0">
             {props.errors.map((e) => {
                 return <li>{e.message}</li>

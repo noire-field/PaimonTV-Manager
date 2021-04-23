@@ -178,7 +178,7 @@ function Main(props) {
         <React.Fragment>
             <h3 className="text-white ms-2 me-2 text-center">{myMovies.title}</h3>
             <MovieList movies={myMovies.movies} className="flex-wrap justify-content-center" preList={<MovieItem image={thumbnailAdd}/>}/>
-            </React.Fragment>
+        </React.Fragment>
     );
 }
 
