@@ -19,6 +19,7 @@
     "firebase": "^8.4.1",
     "jsonwebtoken": "^8.5.1",
     "reflect-metadata": "^0.1.13",
+    "request": "^2.88.2",
     "ts-node-dev": "^1.1.6",
     "typedi": "^0.10.0",
     "uuid": "^8.3.2"
