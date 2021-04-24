@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 
 import LibrarySection from './../../components/LibrarySection';
-import { SeriesFetch } from './../../store/actions/series.action';
+import { UserFetchData } from './../../store/actions/user.action';
 
 import { SeriesToArray } from './../../utils/series';
 
@@ -195,7 +195,7 @@ function Main(props) {
     const series = useSelector(state => state.series.list);
 
     useEffect(() => {
-        dispatch(SeriesFetch());
+        //dispatch(SeriesFetch());
     }, []);
 
     const seriesArray = SeriesToArray(series);
@@ -219,4 +219,4 @@ function Main(props) {
     );
 }
 
-export default Main;
+export default React.memo(Main);

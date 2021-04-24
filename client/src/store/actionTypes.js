@@ -6,3 +6,6 @@ export const USER_SIGNOUT = 'UserSignOu';
 
 export const SERIES_SET = 'SeriesSet';
 export const SERIES_SET_SINGLE = 'SeriesSetSingle';
+
+export const MOVIES_SET = 'MoviesSet';
+export const MOVIES_SET_SINGLE= 'MoviesSetSingle';

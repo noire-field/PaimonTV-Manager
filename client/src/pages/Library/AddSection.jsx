@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 
@@ -8,7 +8,7 @@ import { AppSetLoading } from './../../store/actions/app.action'
 import axios from './../../utils/axios';
 
 import axois from './../../utils/axios';
-import * as Logger from './../../utils/logger';
+import Logger from './../../utils/logger';
 
 function AddSection(props) {
     const history = useHistory();

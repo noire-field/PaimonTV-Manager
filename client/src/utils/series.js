@@ -14,7 +14,3 @@ export function SeriesToArray(series) {
 
     return seriesArray;
 }
-
-export function FindById(id, series) {
-    return series.find((s) => s.id == id);
-}

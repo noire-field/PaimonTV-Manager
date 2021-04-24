@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Redirect, useHistory, useParams } from 'react-router';
-import { useDispatch, useSelector, useStore } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import axios from './../../utils/axios';
 
 import { AppSetLoading } from './../../store/actions/app.action';
-import { SeriesSetSingle, SeriesFetch } from './../../store/actions/series.action';
+import { UserFetchData } from './../../store/actions/user.action';
+import { SeriesSetSingle } from './../../store/actions/series.action';
 
 import MovieList from './../../components/MovieList';
 import MovieItem from './../../components/MovieItem';
@@ -89,12 +90,8 @@ function EditSection(props) {
     const onSectionDelete = async (e) => {
         e.preventDefault();
 
-        if(title.length <= 0) return;
-
         const deletionCheck = window.confirm("Are you sure?");
         if(!deletionCheck) return;
-
-        if(title.length <= 0) return;
 
         setUpdated(false);
         setErrors([]);
@@ -106,7 +103,7 @@ function EditSection(props) {
             })
 
             //dispatch(AppSetLoading(false));
-            dispatch(SeriesFetch(true));
+            dispatch(UserFetchData(true));
         } catch(err) {
             dispatch(AppSetLoading(false));
             setErrors(err.response.data.errors);

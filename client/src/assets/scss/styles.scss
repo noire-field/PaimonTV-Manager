@@ -96,7 +96,7 @@ $color-accent-dark: #bd2722;
 @keyframes anim-loading-icon {
     0%   {
         transform: translate(-50%,-50%) scale(1);
-        opacity: 1;
+        opacity: 0.5;
     }
     100% {
         transform: translate(-50%,-50%) scale(3);

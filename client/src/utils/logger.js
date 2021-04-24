@@ -1,3 +1,7 @@
-export const Debug = (message) => {
+const Debug = (message) => {
     console.log(message);
+}
+
+export default {
+    Debug
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route, Link, useLocation, useRouteMatch } from "react-router-dom";
+import { Switch, Route, useLocation, useRouteMatch } from "react-router-dom";
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import Main from './Library/Main';

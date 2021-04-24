@@ -1,30 +1,127 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Redirect, useHistory, useParams, Link } from 'react-router-dom';
+
+import ErrorList from '../../components/ErrorList';
+
+import axios from './../../utils/axios';
+
+import { AppSetLoading } from './../../store/actions/app.action';
+import { UserFetchData } from './../../store/actions/user.action';
+import { MoviesSetSingle } from './../../store/actions/movies.action';
+
 
 function EditEpisode(props) {
+    const { movieId, episodeId } = useParams();
+
+    const history = useHistory();
+    const dispatch = useDispatch();
+
+    const moviesList = useSelector(state => state.movies.list);
+    const userToken = useSelector(state => state.user.user.token);
+    
+    const movie = moviesList[movieId];
+
+    const [updated, setUpdated] = useState(false);
+    const [errors, setErrors] = useState([]);
+
+    const [tempEpisodeId, setTempEpisodeID] = useState(episodeId.substr(2));
+    const [title, setTitle] = useState(movie && movie.episodes && movie.episodes[episodeId] ? movie.episodes[episodeId].title : "");
+    const [duration, setDuration] = useState(movie && movie.episodes && movie.episodes[episodeId] ? movie.episodes[episodeId].duration: 0);
+    const [fileUrl, setFileUrl] = useState(movie && movie.episodes && movie.episodes[episodeId] ? movie.episodes[episodeId].url : "");
+    const [status, setStatus] = useState(movie && movie.episodes && movie.episodes[episodeId] ? movie.episodes[episodeId].status : 0);
+
+    if(!movie) return <Redirect to="/my-movies"/>
+    if(!movie.episodes || !movie.episodes[episodeId]) return <Redirect to={`/my-movies/${movieId}/edit`}/>
+
+    const episode = movie.episodes[episodeId];
+
+    const onClickBack = (e) => {
+        e.preventDefault();
+        history.push(`/my-movies/${movieId}/edit`)
+    }
+
+    const onSubmitUpdate = async (e) => {
+        e.preventDefault();
+
+        if(title.length <= 0) return;
+
+        setUpdated(false);
+        setErrors([]);
+        dispatch(AppSetLoading(true));
+
+        try {
+            await axios.put(`/movies/${movieId}/episodes/${episodeId.substr(2)}`, { title, duration, progress: -1, url: fileUrl, status }, { 
+                headers: { Authorization: `Bearer ${userToken}` }
+            })
+
+            setUpdated(true);
+
+            episode.title = title;
+            episode.duration = duration;
+            episode.url = fileUrl;
+            episode.status = status;
+
+            dispatch(MoviesSetSingle(movieId, movie));
+            dispatch(AppSetLoading(false));
+        } catch(err) {
+            dispatch(AppSetLoading(false));
+            setErrors(err.response.data.errors);
+        }
+    }
+
+    const onClickDelete = async (e) => {
+        e.preventDefault();
+
+        const deletionCheck = window.confirm("Are you sure?");
+        if(!deletionCheck) return;
+
+        setUpdated(false);
+        setErrors([]);
+        dispatch(AppSetLoading(true));
+
+        try {
+            await axios.delete(`/movies/${movieId}/episodes/${episodeId.substr(2)}`, { 
+                headers: { Authorization: `Bearer ${userToken}` }
+            })
+
+            //dispatch(AppSetLoading(false));
+            //history.push(`/my-movies/${movieId}/edit`);
+            dispatch(UserFetchData(true));
+        } catch(err) {
+            dispatch(AppSetLoading(false));
+            setErrors(err.response.data.errors);
+        }
+    }
+
     return (
         <div className="container text-white">
             <div className="row">
                 <div className="col-lg-8 offset-lg-2">
-                    <h5 className="mb-1">Movie: <b>Saigon In My Heart</b></h5>
-                    <h3 className="mb-3">Edit Episode: <b>Episode #1</b></h3>
-                    <form>
+                    { updated && 
+                    <div className="alert alert-success"><i className="far fa-check-circle me-1"></i>Data has been updated!</div>
+                    }
+                    <ErrorList errors={errors}/>
+                    <h5 className="mb-1">Movie: <b>{movie.title}</b></h5>
+                    <h3 className="mb-3">Edit Episode: <b>{episode.title}</b></h3>
+                    <form onSubmit={onSubmitUpdate}>
                         <div className="row">
                             <div className="col-md-3 mb-1">
                                 <div className="form mb-4">
                                     <label className="form-label text-white font-weight-bold" for="id">ID</label>
-                                    <input type="text" id="id" className="form-control border"/>
+                                    <input type="text" id="id" className="form-control border" value={tempEpisodeId} onChange={(e) => setTempEpisodeID(e.target.value)} readOnly/>
                                 </div>
                             </div>
                             <div className="col-md-6 mb-1">
                                 <div className="form mb-4">
                                     <label className="form-label text-white font-weight-bold" for="title">Title</label>
-                                    <input type="text" id="title" className="form-control border"/>
+                                    <input type="text" id="title" className="form-control border" value={title} onChange={(e) => setTitle(e.target.value)}/>
                                 </div>
                             </div>
                             <div className="col-md-3 mb-1">
                                 <div className="form mb-4">
                                     <label className="form-label text-white font-weight-bold" for="duration">Duration</label>
-                                    <input type="number" id="duration" className="form-control border" min="0" max="99999" value="0"/>
+                                    <input type="number" id="duration" className="form-control border" min="0" max="99999" value={duration} onChange={(e) => setDuration(e.target.value)}/>
                                 </div>
                             </div>
                         </div>
@@ -32,14 +129,15 @@ function EditEpisode(props) {
                             <div className="col-md-8 mb-1">
                                 <div className="form mb-4">
                                     <label className="form-label text-white font-weight-bold" for="file-url">File URL</label>
-                                    <input type="text" id="file-url" className="form-control border"/>
+                                    <input type="text" id="file-url" className="form-control border" value={fileUrl} onChange={(e) => setFileUrl(e.target.value)}/>
                                 </div>
                             </div>
                             <div className="col-md-4 mb-1">
                                 <div className="form mb-4">
                                     <label className="form-label text-white font-weight-bold" for="status">Status</label>
-                                    <select id="status" className="form-select">
-                                        <option value="0" selected>Required Processing</option>
+                                    <select id="status" className="form-select" value={status} onChange={(e) => setStatus(e.target.value)}>
+                                        <option value="0">Required Processing</option>
+                                        <option value="1">Processing</option>
                                         <option value="2">Ready</option>
                                     </select>
                                 </div>
@@ -47,10 +145,10 @@ function EditEpisode(props) {
                         </div>
                         <div className="row">
                             <div className="col-md-2 mb-2">
-                                <button type="submit" className="btn btn-white btn-block"><i class="fas fa-arrow-circle-left me-1"></i>Back</button>
+                                <button onClick={onClickBack} className="btn btn-white btn-block"><i class="fas fa-arrow-circle-left me-1"></i>Back</button>
                             </div>
                             <div className="col-md-2 mb-2">
-                                <button type="submit" className="btn btn-danger btn-block"><i class="fas fa-arrow-circle-left me-1"></i>Delete</button>
+                                <button onClick={onClickDelete} className="btn btn-danger btn-block"><i class="fas fa-arrow-circle-left me-1"></i>Delete</button>
                             </div>
                             <div className="col-md-8 mb-2">
                                 <button type="submit" className="btn btn-warning btn-block"><i class="fas fa-save me-1"></i>Save</button>
@@ -63,4 +161,4 @@ function EditEpisode(props) {
     )
 }
 
-export default EditEpisode;
+export default React.memo(EditEpisode);

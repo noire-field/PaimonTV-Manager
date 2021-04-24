@@ -6,9 +6,8 @@ import axois from '../utils/axios';
 import ErrorList from '../components/ErrorList';
 import paimonLetter from './../assets/images/paimon-letter.png';
 
-import { AppSetLoading, AppSetState } from './../store/actions/app.action';
-import { UserSignIn } from './../store/actions/user.action';
-import { SeriesFetch } from './../store/actions/series.action'
+import { AppSetLoading } from './../store/actions/app.action';
+import { UserSignIn, UserFetchData } from './../store/actions/user.action';
 
 
 function LoginScreen(props) {
@@ -31,7 +30,7 @@ function LoginScreen(props) {
 
             dispatch(AppSetLoading(false));
             dispatch(UserSignIn(data.user.id, data.user.email, data.user.token));
-            dispatch(SeriesFetch(true));
+            dispatch(UserFetchData(true));
             
             Cookies.set('JWT', data.user.token, {
                 sameSite: 'Strict'

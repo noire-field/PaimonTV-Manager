@@ -11,7 +11,7 @@ function MovieList(props) {
                 timeout={500}
                 classNames="item"
             >
-                <MovieItem styles={{...props.styles}} image={m.image}/>
+                <MovieItem key={m.id} styles={{...props.styles}} id={m.id} image={m.thumbnail} onClick={props.onMovieClick}/>
             </CSSTransition>
         );
     })
@@ -23,4 +23,4 @@ function MovieList(props) {
     )
 }
 
-export default MovieList;
+export default React.memo(MovieList);

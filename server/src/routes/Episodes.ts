@@ -58,10 +58,10 @@ async (req: Request, res: Response) => {
     // Add it to episode list
     const episodeData = { 
         title,
-        duration,
+        duration: Number(duration),
         progress: 0,
         url,
-        status
+        status: Number(status)
     };
 
     
@@ -85,7 +85,7 @@ router.put('/:movieId/episodes/:episodeId', [
     param('episodeId').isNumeric().isFloat({ min: 1, max: 999 }).withMessage('Id must be from 1 to 999'),
     body('title').isLength({ min: 1, max: 64 }).withMessage('Title must be from 1 to 64 characters'),
     body('duration').isNumeric().isFloat({ min: 0, max: 99999 }).withMessage('Duration must be a number in second').default(0),
-    body('progress').isNumeric().isFloat({ min: 0, max: 99999 }).withMessage('Progress must be a number in second').default(0),
+    //body('progress').isNumeric().isFloat({ min: -1, max: 99999 }).withMessage('Progress must be a number in second').default(-1),
     body('url').isURL().withMessage('Url must be valid'),
     body('status').isNumeric().isIn([0, 2]).withMessage('Status is invalid')
 ],
@@ -93,7 +93,7 @@ CurrentUser, RequireAuth, RequireMovie, ValidateRequest,
 async (req: Request, res: Response) => {
     const id = req.params.episodeId;
     const { movieData: rawMovieData, movieRef } = req;
-    const { title, duration, progress, url, status } = req.body;
+    const { title, duration, /*progress, */url, status } = req.body;
 
     var movieData = rawMovieData.val();
     var episodes = {};
@@ -111,7 +111,6 @@ async (req: Request, res: Response) => {
     const episodeData = { 
         title,
         duration,
-        progress,
         url,
         status
     };
