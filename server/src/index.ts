@@ -5,6 +5,7 @@ require('dotenv').config();
 // Next
 import firebase from 'firebase';
 import App from './app';
+import { queue } from './services/Queue';
 
 const firebaseConfig = {
     apiKey: process.env.FB_APIKEY,
@@ -32,7 +33,9 @@ const AppStart = async () => {
 
         return;
     }
+
     console.log(`[Index] Firebase logged in as ${useCredential.user!.email}`);
+    queue.Connect(firebaseApp.database().ref(`queue`));
    
     App.listen(process.env.APP_PORT_HTTP, () => {
         console.log(`[Index] App started on port ${process.env.APP_PORT_HTTP}`);

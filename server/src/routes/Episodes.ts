@@ -1,13 +1,15 @@
 import express, { Request, Response } from 'express';
 import { body, param } from 'express-validator';
-import { v4 as uuidv4 } from 'uuid';
-import { InternalServerError } from '../errors/InternalServerError';
-import { NotFoundError } from '../errors/NotFoundError';
+
 import { CurrentUser } from '../middlewares/CurrentUser';
 import { ValidateRequest } from '../middlewares/ValidateRequest';
 import { RequireAuth } from '../middlewares/RequireAuth';
 import { RequireMovie } from '../middlewares/RequireMovie';
+
 import { BadRequestError } from '../errors/BadRequestError';
+import { InternalServerError } from '../errors/InternalServerError';
+
+import { queue } from './../services/Queue';
 
 const router = express.Router();
 
@@ -40,6 +42,7 @@ CurrentUser, RequireAuth, RequireMovie, ValidateRequest,
 async (req: Request, res: Response) => {
     const { movieData: rawMovieData, movieRef } = req;
     const { id, title, duration, url, status } = req.body;
+    const { movieId } = req.params;
 
     var movieData = rawMovieData.val();
     var episodes = {};
@@ -72,6 +75,15 @@ async (req: Request, res: Response) => {
     } catch(e) {
         console.log(e);
         throw new InternalServerError('Unable to add episode (Firebase)');
+    }
+
+    if(episodeData.status == 0) { // Put into queue
+        queue.Add({
+            userId: req.currentUser!.id,
+            movieId,
+            episodeId: epId,
+            status: 0
+        })
     }
 
     return res.status(201).send({
