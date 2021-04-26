@@ -5,6 +5,9 @@ export interface QueueItemDocument {
     status: number;
 }
 
+/*
+    status: 0 - Wait for processing / 1 - Downloading / 2 - Uploading / 3 - Completed / 4 - Failured
+*/
 export interface QueueItemModel {
     id: string;
     userId: string;
@@ -12,6 +15,13 @@ export interface QueueItemModel {
     episodeId: string;
     status: number;
     createdAt: number;
+    fileSize: number;
+    progress: number;
+}
+
+export interface QueueData {
+    fileSize: number;
+    fetchedSize: number;
 }
 
 export const enum QueueStatus {
@@ -19,4 +29,16 @@ export const enum QueueStatus {
     Verifying = 'Verifying',
     Downloading = 'Downloading',
     Uploading = 'Uploading'
+}
+
+export interface Callback {
+    (success: boolean, message: string): void;
+} 
+
+export interface AliveCheck {
+    lastStep: number;
+    previousFetchedSize: number;
+    checkCount: number;
+    lastCheckTime: number;
+    interval: any;
 }

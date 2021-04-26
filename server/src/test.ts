@@ -1,6 +1,10 @@
-const request = require('request'), 
-fs = require('fs'),
-http = require('http');
+require('dotenv').config();
+
+import { queue } from './services/Queue';
+import { QueueItemDocument } from './types/Queue';
+import http from 'http';
+import https from 'https'
+import fs from 'fs';
 
 /*
 const download = (url, filename, callback) => {
@@ -52,17 +56,17 @@ const download = (url, filename, callback) => {
 }
 
 */
+/*
 
-
-function download(url, callback){
-    var request = http.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' } }, function(response) {
+function download(url: string, callback: any){
+    var request = https.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' } }, function(response: any ) {
        
         var len = parseInt(response.headers['content-length'], 10);
         var body = "";
         var cur = 0;
         var total = len / 1048576; //1048576 - bytes in  1Megabyte
 
-        response.on("data", function(chunk) {
+        response.on("data", function(chunk: any) {
             body += chunk;
             cur += chunk.length;
             console.log("Downloading " + (100.0 * cur / len).toFixed(2) + "% " + (cur / 1048576).toFixed(2) + " mb / Total size: " + total.toFixed(2) + " mb");
@@ -73,25 +77,31 @@ function download(url, callback){
             console.log("Downloading complete");
         });
 
-        request.on("error", function(e){
-            console.log("Error: " + e.message);
+        response.on("error", function(err:any){
+            console.log("Error: " + err.message);
         });
 
-        request.on('abort', () => {
+        response.on('abort', () => {
             console.log("Abort");
         })
 
-        request.on('timeout', () => {
+        response.on('timeout', () => {
             console.log("Timeout");
         })
     });
 };
 
-
-download('http://ipv4.download.thinkbroadband.com/100MB.zip', (err) => {
+// http://ipv4.download.thinkbroadband.com/100MB.zip
+// https://speed.hetzner.de/100MB.bin
+download('https://speed.hetzner.de/100MB.bin', (err: any) => {
     console.log(err);
-})
+})*/
 
-download('http://ipv4.download.thinkbroadband.com/100MB.zip', (err) => {
-    console.log(err);
-})
+
+queue.Connect();
+queue.Add({
+    userId: '1',
+    movieId: '2',
+    episodeId: '3',
+    status: 0
+});

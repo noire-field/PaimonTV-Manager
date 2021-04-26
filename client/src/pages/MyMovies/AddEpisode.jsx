@@ -102,7 +102,6 @@ function AddEpisode(props) {
                                     <label className="form-label text-white font-weight-bold" for="status">Status</label>
                                     <select id="status" className="form-select" value={status} onChange={(e) => setStatus(e.target.value)}>
                                         <option value="0">Required Processing</option>
-                                        <option value="1">Processing</option>
                                         <option value="2">Ready</option>
                                     </select>
                                 </div>

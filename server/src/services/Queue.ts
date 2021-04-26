@@ -7,7 +7,7 @@ import { QueueItemDocument, QueueItemModel, QueueStatus } from './../types/Queue
 class Queue {
     connected: boolean = false;
     queueList: QueueItemModel[] = [];
-    firebaseRef!: firebase.database.Reference;
+    firebaseDB!: firebase.database.Database;
     queueProcessors!: QueueProcessor[];
 
     constructor() {
@@ -15,14 +15,14 @@ class Queue {
         console.log(this.queueList);
     }
 
-    Connect(ref: firebase.database.Reference) {
+    Connect(ref: firebase.database.Database) {
         this.connected = true;
-        this.firebaseRef = ref;
+        this.firebaseDB = ref;
 
         this.queueProcessors = [
             new QueueProcessor(1, ref),
-            new QueueProcessor(2, ref),
-            new QueueProcessor(3, ref)
+            new QueueProcessor(2, ref)//,
+            //new QueueProcessor(3, ref)
         ]
 
         setInterval(this.CheckQueue.bind(this), 500);
@@ -40,18 +40,20 @@ class Queue {
         this.queueList.push({
             ...item,
             id: queueId,
-            createdAt: new Date().getTime()
+            createdAt: new Date().getTime(),
+            fileSize: 0,
+            progress: 0
         });
 
-        this.firebaseRef.child(queueId).set({
+        this.firebaseDB.ref('queue').child(queueId).set({
             ...item,
             createdAt: new Date().getTime()
         })
-        
+    
         console.log(`[Queue] Added ${item.movieId} / ${item.episodeId} (User: ${item.userId})`);
     }
 
-    CheckQueue() {
+    private CheckQueue() {
         if(!this.connected || this.queueList.length <= 0)
             return;
 
@@ -67,9 +69,28 @@ class Queue {
         
         if(readyProcessor) {
             const item = this.queueList.shift();
-            readyProcessor.Process(item!);
+            this.SendToProcessor(readyProcessor, item!);
         }
+    }
+
+    private SendToProcessor(processor: QueueProcessor, item: QueueItemModel) {
+        processor.Process(item, async (success: boolean, data: string) => {
+            if(!success) { // Fail? Put it b
+                return;
+            }
+
+            // Delete it on done
+            await this.firebaseDB.ref('queue').child(item.id).remove();
+        });
     }
 }
 
 export const queue = new Queue();
+
+/* 
+    Todo:
+    1. On Process fail, remove it from queue and add log to user
+    2. Can not edit or update if the item is being processed
+    3. Try catch all the firebase shit in Queue/QueueProcessor
+
+*/

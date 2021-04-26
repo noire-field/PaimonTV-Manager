@@ -105,9 +105,10 @@ function EditMovie(props) {
 
         var status;
         switch(ep.status) {
-            case 0: status = <span className="text-warning">Pending</span>; break;
-            case 1: status = <span className="text-danger">Processing</span>; break;
+            case 0: status = <span className="text-primary">Pending</span>; break;
+            case 1: status = <span className="text-warning">Processing</span>; break;
             case 2: status = <span className="text-success">Ready</span>; break;
+            case 3: status = <span className="text-danger">Processing Failed</span>; break;
         }
 
         return (

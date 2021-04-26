@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node-dev src/index.ts"
+    "start": "ts-node-dev src/index.ts",
+    "dev": "ts-node-dev src/test.ts"
   },
   "author": "Noire Bladefield",
   "license": "ISC",
@@ -12,11 +13,14 @@
     "@types/express": "^4.17.11",
     "@types/jsonwebtoken": "^8.5.1",
     "@types/uuid": "^8.3.0",
+    "aws-sdk": "^2.892.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-async-errors": "^3.1.1",
     "express-validator": "^6.10.0",
     "firebase": "^8.4.1",
+    "get-video-duration": "^3.0.2",
+    "https": "^1.0.0",
     "jsonwebtoken": "^8.5.1",
     "reflect-metadata": "^0.1.13",
     "request": "^2.88.2",

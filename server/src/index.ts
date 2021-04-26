@@ -35,7 +35,7 @@ const AppStart = async () => {
     }
 
     console.log(`[Index] Firebase logged in as ${useCredential.user!.email}`);
-    queue.Connect(firebaseApp.database().ref(`queue`));
+    queue.Connect(firebase.database());
    
     App.listen(process.env.APP_PORT_HTTP, () => {
         console.log(`[Index] App started on port ${process.env.APP_PORT_HTTP}`);
