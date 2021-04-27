@@ -72,7 +72,7 @@ function LoginScreen(props) {
                                             </div>
                                             </div>
                                             <div className="col-lg-6">
-                                                <a href="#" className="text-muted">Forgot password?</a>
+                                                <span className="text-muted">Forgot password?</span>
                                             </div>
                                         </div>
                                         <button type="submit" className="btn btn-primary btn-block">Sign In</button>

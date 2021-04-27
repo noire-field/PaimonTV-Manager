@@ -7,8 +7,8 @@ function ErrorList(props) {
         <div className="alert alert-danger mb-2">
             <p className="mb-0 font-weight-bold">Errors:</p>
             <ul className="mb-0">
-            {props.errors.map((e) => {
-                return <li>{e.message}</li>
+            {props.errors.map((e, i) => {
+                return <li key={i}>{e.message}</li>
             })}
             </ul>
         </div>

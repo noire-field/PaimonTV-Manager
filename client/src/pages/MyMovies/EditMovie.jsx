@@ -6,6 +6,7 @@ import ErrorList from '../../components/ErrorList';
 
 import axios from './../../utils/axios';
 import { EpisodesToArray, DurationSecondToText } from './../../utils/movies';
+import { SeriesToArray } from './../../utils/series';
 
 import { AppSetLoading } from './../../store/actions/app.action';
 import { UserFetchData } from './../../store/actions/user.action';
@@ -19,13 +20,16 @@ function EditMovie(props) {
 
     const moviesList = useSelector(state => state.movies.list);
     const userToken = useSelector(state => state.user.user.token);
+    const seriesList = useSelector(state => state.series.list);
     
     const movie = moviesList[movieId];
+    const series = SeriesToArray(seriesList);
 
     const [title, setTitle] = useState(movie ? movie.title : "");
     const [subTitle, setSubTitle] = useState(movie ? movie.subTitle : "");
     const [thumbnail, setThumbnail] = useState(movie ? movie.thumbnail : "");
     const [year, setYear] = useState(movie ? movie.year : "");
+    const [addSeries, setAddSeries] = useState('my-list');
 
     const [updated, setUpdated] = useState(false);
     const [errors, setErrors] = useState([]);
@@ -47,7 +51,7 @@ function EditMovie(props) {
         dispatch(AppSetLoading(true));
 
         try {
-            const { data } = await axios.put(`/movies/${movieId}`, { title, subTitle, thumbnail, year }, { 
+            await axios.put(`/movies/${movieId}`, { title, subTitle, thumbnail, year }, { 
                 headers: { Authorization: `Bearer ${userToken}` }
             })
 
@@ -61,9 +65,8 @@ function EditMovie(props) {
             dispatch(MoviesSetSingle(movieId, movie));
             dispatch(AppSetLoading(false));
         } catch(err) {
-            console.log(err);
             dispatch(AppSetLoading(false));
-            //setErrors(err.response.data.errors);
+            setErrors(err.response.data.errors);
         }
     }
 
@@ -90,6 +93,28 @@ function EditMovie(props) {
         }
     }
 
+    const onSeriesAddMovie = async (e) => {
+        e.preventDefault();
+
+        setUpdated(false);
+        setErrors([]);
+        dispatch(AppSetLoading(true));
+
+        try {
+            await axios.post(`/series/${addSeries}/movies`, { movieId }, { 
+                headers: { Authorization: `Bearer ${userToken}` }
+            })
+
+            setUpdated(true);
+
+            //dispatch(MoviesSetSingle(movieId, movie));
+            dispatch(UserFetchData(true));
+        } catch(err) {
+            dispatch(AppSetLoading(false));
+            setErrors(err.response.data.errors);
+        }
+    }
+
     const onClickAddEpisode = (e) => {
         e.preventDefault();
         history.push(`/my-movies/${movieId}/add-episode`);
@@ -109,22 +134,23 @@ function EditMovie(props) {
             case 1: status = <span className="text-warning">Processing</span>; break;
             case 2: status = <span className="text-success">Ready</span>; break;
             case 3: status = <span className="text-danger">Processing Failed</span>; break;
+            default: status = <span className="text-white">Unknown Status</span>; break;
         }
 
         return (
-            <tr>
+            <tr key={ep.id}>
                 <th scope="row">{ep.id}</th>
                 <td className="text-start">
                     <Link to={`/my-movies/${movieId}/episodes/ep${ep.id}/edit`} className="text-white">{ep.title} <span className="small text-danger">Edit</span></Link>
                 </td>
                 <td>{DurationSecondToText(ep.duration)}</td>
                 <td>{progress >= 95 ? 100 : progress}%</td>
-                <td><a href={ep.url} target="_blank">Link</a></td>
+                <td><a href={ep.url} target="_blank" rel="noreferrer">Link</a></td>
                 <td>{status}</td>
             </tr>
         )
     }) : (
-        <tr>
+        <tr key={'zero'}>
             <td colSpan={6}><p className="mb-0 text-cener">There is no episode</p></td>
         </tr>
     )
@@ -132,55 +158,76 @@ function EditMovie(props) {
     return (
         <div className="container text-white">
             <div className="row mb-5">
-                <div className="col-lg-12 text-center">
+                <div className="col-lg-12">
                     { updated && 
                     <div className="alert alert-success"><i className="far fa-check-circle me-1"></i>Data has been updated!</div>
                     }
                     <ErrorList errors={errors}/>
                 </div>
                 <div className="col-lg-2 text-center">
-                    <img className="editting-thumbnail mb-3" src={movie.thumbnail}/>
+                    <button onClick={onClickBack} className="btn btn-white btn-block mb-2"><i className="fas fa-arrow-circle-left me-1"></i>Back</button>
+                    <img className="editting-thumbnail mb-3" alt="Thumbnail" src={movie.thumbnail}/>
                 </div>
-                <div className="col-lg-8">
+                <div className="col-lg-10">
                     <h3 className="mb-3">Edit Movie: <b>{movie.title}</b></h3>
-                    <form onSubmit={onSubmitUpdate}>
+                    <form onSubmit={onSubmitUpdate} className="mb-4">
                         <div className="row">
-                            <div className="col-md-6 mb-1">
-                                <div className="form mb-4">
-                                    <label className="form-label text-white font-weight-bold" for="title">Title</label>
+                            <div className="col-md-5">
+                                <div className="form mb-2">
+                                    <label className="form-label text-white font-weight-bold" htmlFor="title">Title</label>
                                     <input type="text" id="title" className="form-control border" value={title} onChange={(e) => setTitle(e.target.value)}/>
                                 </div>
                             </div>
-                            <div className="col-md-6 mb-1">
-                                <div className="form mb-4">
-                                    <label className="form-label text-white font-weight-bold" for="alt-title">Alternative Title</label>
+                            <div className="col-md-5">
+                                <div className="form mb-2">
+                                    <label className="form-label text-white font-weight-bold" htmlFor="alt-title">Alternative Title</label>
                                     <input type="text" id="alt-title" className="form-control border" value={subTitle} onChange={(e) => setSubTitle(e.target.value)}/>
                                 </div>
                             </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-md-8 mb-1">
-                                <div className="form mb-4">
-                                    <label className="form-label text-white font-weight-bold" for="thumbnail">Thumbnail URL</label>
-                                    <input type="text" id="thumbnail" className="form-control border" value={thumbnail} onChange={(e) => setThumbnail(e.target.value)}/>
-                                </div>
-                            </div>
-                            <div className="col-md-4 mb-1">
-                                <div className="form mb-4">
-                                    <label className="form-label text-white font-weight-bold" for="year">Year</label>
+                            <div className="col-md-2">
+                                <div className="form mb-2">
+                                    <label className="form-label text-white font-weight-bold" htmlFor="year">Year</label>
                                     <input type="text" id="year" className="form-control border" value={year} onChange={(e) => setYear(e.target.value)}/>
                                 </div>
                             </div>
                         </div>
                         <div className="row">
-                            <div className="col-md-2 mb-2">
-                                <button onClick={onClickBack} className="btn btn-white btn-block"><i class="fas fa-arrow-circle-left me-1"></i>Back</button>
+                            <div className="col-md-6">
+                                <div className="form mb-2">
+                                    <label className="form-label text-white font-weight-bold" htmlFor="thumbnail">Thumbnail URL</label>
+                                    <input type="text" id="thumbnail" className="form-control border" value={thumbnail} onChange={(e) => setThumbnail(e.target.value)}/>
+                                </div>
                             </div>
-                            <div className="col-md-2 mb-2">
-                                <button onClick={onClickDelete} className="btn btn-danger btn-block"><i class="fas fa-trash-alt me-1"></i>Delete</button>
+                            <div className="col-md-6">
+                                <div className="form mb-2">
+                                    <label className="form-label text-white font-weight-bold" htmlFor="thumbnail">Action</label>
+                                    <div className="row">
+                                        <div className="col-8 mb-2 mb-lg-0">
+                                            <button type="submit" className="btn btn-warning btn-block"><i className="fas fa-save me-1"></i>Save</button>
+                                        </div>
+                                        <div className="col-4 mb-2 mb-lg-0">
+                                            <button onClick={onClickDelete} className="btn btn-danger btn-block"><i className="fas fa-trash-alt me-1"></i>Delete</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="col-md-8 mb-2">
-                                <button type="submit" className="btn btn-warning btn-block"><i class="fas fa-save me-1"></i>Save</button>
+                        </div>
+                    </form>
+                    <h3 className="mb-3">Add To Section</h3>
+                    <form>
+                        <div className="row">
+                            <div className="col-md-6">
+                                <div className="form mb-2">
+                                    <select className="form-select" value={addSeries} onChange={(e) => setAddSeries(e.target.value)}>
+                                        <option value='my-list'>My List</option>
+                                        { series.map((s) => {
+                                            return <option key={s.id} value={s.id}>{s.title}</option>
+                                        })}
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="col-md-2">
+                                <button onClick={onSeriesAddMovie} className="btn btn-info btn-block"><i className="fas fa-plus-circle me-1"></i>Add</button>
                             </div>
                         </div>
                     </form>
@@ -190,10 +237,10 @@ function EditMovie(props) {
                 <div className="col-lg-12">
                     <div className="d-flex justify-content-start align-items-center mb-2">
                         <h3 className="me-2">Movie Episodes</h3>
-                        <button onClick={onClickAddEpisode} className="btn btn-danger pbg-accent btn-sm px-2 py-1"><i class="fas fa-plus me-1"></i>Add episode</button>
+                        <button onClick={onClickAddEpisode} className="btn btn-danger pbg-accent btn-sm px-2 py-1"><i className="fas fa-plus me-1"></i>Add episode</button>
                     </div>
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover table-bordered table-dark">
+                    <div className="table-responsive">
+                        <table className="table table-striped table-hover table-bordered table-dark">
                             <thead className="text-center">
                                 <tr>
                                     <th scope="col">ID</th>

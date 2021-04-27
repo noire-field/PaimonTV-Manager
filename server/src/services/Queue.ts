@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import fs from 'fs';
 import firebase from 'firebase';
 
 import QueueProcessor from './QueueProcessor';
@@ -12,7 +13,6 @@ class Queue {
 
     constructor() {
         this.queueList = [];
-        console.log(this.queueList);
     }
 
     Connect(ref: firebase.database.Database) {
@@ -20,13 +20,26 @@ class Queue {
         this.firebaseDB = ref;
 
         this.queueProcessors = [
-            new QueueProcessor(1, ref),
-            new QueueProcessor(2, ref)//,
+            new QueueProcessor(1, ref)//,
+            //new QueueProcessor(2, ref),
             //new QueueProcessor(3, ref)
         ]
 
         setInterval(this.CheckQueue.bind(this), 500);
         console.log("Queue Connected");
+
+        // Clean up the queue
+        var cleanCount = 0;
+        this.firebaseDB.ref('queue').set(null);
+        fs.readdir('./tmp', (err, files) => {
+            if (err) throw err;
+            for (const file of files) {
+                cleanCount++;
+                fs.unlink(`./tmp/${file}`, () => {});
+            }
+        });
+
+        if(cleanCount > 0) this.Log(`Cleaned tmp folder with ${cleanCount} file${cleanCount > 1 ? "s" : ''}`);
     }
 
     async Add(item: QueueItemDocument) {
@@ -75,7 +88,8 @@ class Queue {
 
     private SendToProcessor(processor: QueueProcessor, item: QueueItemModel) {
         processor.Process(item, async (success: boolean, data: string) => {
-            if(!success) { // Fail? Put it b
+            if(!success) { // Fail? Log and remove it anyway
+                await this.firebaseDB.ref('queue').child(item.id).remove();
                 return;
             }
 
@@ -83,14 +97,16 @@ class Queue {
             await this.firebaseDB.ref('queue').child(item.id).remove();
         });
     }
+
+    private Log(message: string) {
+        console.log(`[Queue] ${message}`);
+    }
 }
 
 export const queue = new Queue();
 
 /* 
     Todo:
-    1. On Process fail, remove it from queue and add log to user
-    2. Can not edit or update if the item is being processed
     3. Try catch all the firebase shit in Queue/QueueProcessor
-
+    4. Remove files from AWS S3 if changing something
 */

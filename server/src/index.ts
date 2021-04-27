@@ -34,11 +34,21 @@ const AppStart = async () => {
         return;
     }
 
+    setInterval(RefreshToken, 15 * 60 * 1000); // 15 minutes
+
     console.log(`[Index] Firebase logged in as ${useCredential.user!.email}`);
     queue.Connect(firebase.database());
    
     App.listen(process.env.APP_PORT_HTTP, () => {
         console.log(`[Index] App started on port ${process.env.APP_PORT_HTTP}`);
+    });
+}
+
+const RefreshToken = () => {
+    firebase.auth().currentUser!.getIdToken(true).then(function(idToken) {
+        console.log(`[Firebase] Token is refreshed`);
+    }).catch(function(error) {
+        console.log(`[Firebase] Unable to refresh token`);
     });
 }
 

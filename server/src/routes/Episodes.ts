@@ -104,6 +104,7 @@ router.put('/:movieId/episodes/:episodeId', [
 CurrentUser, RequireAuth, RequireMovie, ValidateRequest, 
 async (req: Request, res: Response) => {
     const id = req.params.episodeId;
+    const movieId = req.params.movieId;
     const { movieData: rawMovieData, movieRef } = req;
     const { title, duration, /*progress, */url, status } = req.body;
 
@@ -119,16 +120,19 @@ async (req: Request, res: Response) => {
     if(!episodes[epId])
         throw new BadRequestError('This episode id does not exist');
     
+    const episode = episodes[epId];
+    
     // Make the update
     const episodeData = { 
         title,
         duration,
         url,
-        status
+        status: Number(status)
     };
 
-    // Is this episode in the progressing list?
-    // Todo: If yes, block it.
+    // @ts-ignore
+    if(episode.status == 1)
+        throw new BadRequestError('This episode is being processed');
 
     // Continue
     try {
@@ -139,6 +143,17 @@ async (req: Request, res: Response) => {
         console.log(e);
         throw new InternalServerError('Unable to update episode (Firebase)');
     }
+
+    // @ts-ignore
+    if(episodeData.status == 0 && episode.status != 0) { // Need processing and was not in queue already
+        queue.Add({
+            userId: req.currentUser!.id,
+            movieId,
+            episodeId: epId,
+            status: 0
+        })
+    }
+
 
     return res.status(200).send({
         success: true,
@@ -166,10 +181,13 @@ async (req: Request, res: Response) => {
     
     if(!episodes[epId])
         throw new BadRequestError('This episode id does not exist');
-    
-    // Is this episode in the progressing list?
-    // Todo: If yes, block it.
 
+    const episode = episodes[epId];
+    
+    // @ts-ignore
+    if(episode.status == 1)
+        throw new BadRequestError('This episode is being processed');
+        
     movieRef!.child('episodes').child(epId).set(null);
 
     return res.status(200).send({

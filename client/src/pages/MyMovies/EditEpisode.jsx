@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Redirect, useHistory, useParams, Link } from 'react-router-dom';
+import { Redirect, useHistory, useParams } from 'react-router-dom';
 
 import ErrorList from '../../components/ErrorList';
 
@@ -29,7 +29,7 @@ function EditEpisode(props) {
     const [title, setTitle] = useState(movie && movie.episodes && movie.episodes[episodeId] ? movie.episodes[episodeId].title : "");
     const [duration, setDuration] = useState(movie && movie.episodes && movie.episodes[episodeId] ? movie.episodes[episodeId].duration: 0);
     const [fileUrl, setFileUrl] = useState(movie && movie.episodes && movie.episodes[episodeId] ? movie.episodes[episodeId].url : "");
-    const [status, setStatus] = useState(movie && movie.episodes && movie.episodes[episodeId] ? movie.episodes[episodeId].status : 0);
+    const [status, setStatus] = useState(movie && movie.episodes && movie.episodes[episodeId] ? ([1,3].indexOf(movie.episodes[episodeId].status) !== -1 ? 0 : movie.episodes[episodeId].status) : 0);
 
     if(!movie) return <Redirect to="/my-movies"/>
     if(!movie.episodes || !movie.episodes[episodeId]) return <Redirect to={`/my-movies/${movieId}/edit`}/>
@@ -108,19 +108,19 @@ function EditEpisode(props) {
                         <div className="row">
                             <div className="col-md-3 mb-1">
                                 <div className="form mb-4">
-                                    <label className="form-label text-white font-weight-bold" for="id">ID</label>
+                                    <label className="form-label text-white font-weight-bold" htmlFor="id">ID</label>
                                     <input type="text" id="id" className="form-control border" value={tempEpisodeId} onChange={(e) => setTempEpisodeID(e.target.value)} readOnly/>
                                 </div>
                             </div>
                             <div className="col-md-6 mb-1">
                                 <div className="form mb-4">
-                                    <label className="form-label text-white font-weight-bold" for="title">Title</label>
+                                    <label className="form-label text-white font-weight-bold" htmlFor="title">Title</label>
                                     <input type="text" id="title" className="form-control border" value={title} onChange={(e) => setTitle(e.target.value)}/>
                                 </div>
                             </div>
                             <div className="col-md-3 mb-1">
                                 <div className="form mb-4">
-                                    <label className="form-label text-white font-weight-bold" for="duration">Duration</label>
+                                    <label className="form-label text-white font-weight-bold" htmlFor="duration">Duration</label>
                                     <input type="number" id="duration" className="form-control border" min="0" max="99999" value={duration} onChange={(e) => setDuration(e.target.value)}/>
                                 </div>
                             </div>
@@ -128,14 +128,14 @@ function EditEpisode(props) {
                         <div className="row">
                             <div className="col-md-8 mb-1">
                                 <div className="form mb-4">
-                                    <label className="form-label text-white font-weight-bold" for="file-url">File URL</label>
+                                    <label className="form-label text-white font-weight-bold" htmlFor="file-url">File URL</label>
                                     <input type="text" id="file-url" className="form-control border" value={fileUrl} onChange={(e) => setFileUrl(e.target.value)}/>
                                 </div>
                             </div>
                             <div className="col-md-4 mb-1">
                                 <div className="form mb-4">
-                                    <label className="form-label text-white font-weight-bold" for="status">Status</label>
-                                    <select id="status" className="form-select" value={status} onChange={(e) => setStatus(e.target.value)}>
+                                    <label className="form-label text-white font-weight-bold" htmlFor="status">Status</label>
+                                    <select id="status" className="form-select" value={status} onChange={(e) => setStatus(Number(e.target.value))}>
                                         <option value="0">Required Processing</option>
                                         <option value="2">Ready</option>
                                     </select>
@@ -144,13 +144,13 @@ function EditEpisode(props) {
                         </div>
                         <div className="row">
                             <div className="col-md-2 mb-2">
-                                <button onClick={onClickBack} className="btn btn-white btn-block"><i class="fas fa-arrow-circle-left me-1"></i>Back</button>
+                                <button onClick={onClickBack} className="btn btn-white btn-block"><i className="fas fa-arrow-circle-left me-1"></i>Back</button>
                             </div>
                             <div className="col-md-2 mb-2">
-                                <button onClick={onClickDelete} className="btn btn-danger btn-block"><i class="fas fa-arrow-circle-left me-1"></i>Delete</button>
+                                <button onClick={onClickDelete} className="btn btn-danger btn-block"><i className="fas fa-arrow-circle-left me-1"></i>Delete</button>
                             </div>
                             <div className="col-md-8 mb-2">
-                                <button type="submit" className="btn btn-warning btn-block"><i class="fas fa-save me-1"></i>Save</button>
+                                <button type="submit" className="btn btn-warning btn-block"><i className="fas fa-save me-1"></i>Save</button>
                             </div>
                         </div>
                     </form>

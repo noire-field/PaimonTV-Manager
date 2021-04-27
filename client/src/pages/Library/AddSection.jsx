@@ -4,11 +4,11 @@ import { useHistory } from 'react-router';
 
 import ErrorList from './../../components/ErrorList'
 
-import { AppSetLoading } from './../../store/actions/app.action'
+import { AppSetLoading } from './../../store/actions/app.action';
+import { UserFetchData } from './../../store/actions/user.action';
 import axios from './../../utils/axios';
 
-import axois from './../../utils/axios';
-import Logger from './../../utils/logger';
+import { Debug }from './../../utils/logger';
 
 function AddSection(props) {
     const history = useHistory();
@@ -30,11 +30,11 @@ function AddSection(props) {
         dispatch(AppSetLoading(true));
 
         try {
-            const { data } = await axios.post('/series', { title }, { 
+            await axios.post('/series', { title }, { 
                 headers: { Authorization: `Bearer ${userToken}` }
             })
 
-            dispatch(AppSetLoading(false));
+            dispatch(UserFetchData(true));
             history.goBack();
         } catch(err) {
             dispatch(AppSetLoading(false));
@@ -42,7 +42,7 @@ function AddSection(props) {
         }
     }
 
-    Logger.Debug(`[App][MainScreen][Library][Add Section] Render`);
+    Debug(`[App][MainScreen][Library][Add Section] Render`);
 
     return (
         <div className="container text-white">

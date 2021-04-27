@@ -7,6 +7,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
 import axios from './utils/axios';
+import { Debug } from './utils/logger';
 
 import { AppSetLoading, AppSetState } from './store/actions/app.action';
 import { UserSignIn, UserFetchData } from './store/actions/user.action';
@@ -21,48 +22,39 @@ function App() {
     const loading = useSelector(state => state.app.loading);
     const dispatch = useDispatch();
 
-    useEffect(async () => {
-        if(appState != 0) return;
-
-        dispatch(AppSetLoading(true));
-
-        var timeoutHandler = null;
+    useEffect(() => {
+        if(appState !== 0) return;
 
         // Fetch JWT cookie from cookie
         const jwt = Cookies.get('JWT');
         if(jwt) {
-            try {
-                const { data } = await axios.post('/auth/verify-token', {
-                    token: jwt
-                });
+            dispatch(AppSetLoading(true));
 
+            axios.post('/auth/verify-token', {
+                token: jwt
+            }).then(({ data }) => {
                 dispatch(AppSetLoading(false));
                 dispatch(UserSignIn(data.user.id, data.user.email, jwt));
                 dispatch(UserFetchData(true)); // true -> set app state to 2 after fetching done
-            } catch(err) {
+            }).catch((err) => {
                 Cookies.remove('JWT');
                 dispatch(AppSetLoading(false));
                 dispatch(AppSetState(1));
-            }
+            })
         } else { // No Key? Not Logged?
             dispatch(AppSetState(1));
-
-            // Just for fun, LOL!
-            timeoutHandler = setTimeout(() => {
-                dispatch(AppSetLoading(false));
-            }, 500);
         }
+    }, [appState, dispatch]); // First Load
 
-        return () => {
-            if(timeoutHandler) clearTimeout(timeoutHandler);
-        }
-    }, [appState]); // First Load
+    Debug(`[App] Render (State: ${appState})`);
 
-    console.log("[App] Render");
-
+    // Khá là là lồn
     return (
-        <React.Fragment>
-            { appState > 0 &&
+        <div>
+            { appState === 1 &&
+                <LoginScreen/>
+            }
+            { appState === 2 &&
             <SwitchTransition mode="out-in">
                 <CSSTransition
                     key={appState}
@@ -71,14 +63,14 @@ function App() {
                     }}
                     classNames="fade-in"
                 >
-                    { appState == 1 ? <LoginScreen/> : <Router><MainScreen/></Router> }
+                    <Router><MainScreen/></Router>
                 </CSSTransition>
             </SwitchTransition>
             }
             <CSSTransition in={loading} timeout={250} classNames="anim-slideup-loading" unmountOnExit>
                 <Loading/>
             </CSSTransition>
-        </React.Fragment>
+        </div>
     )
 }
 

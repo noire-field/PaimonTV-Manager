@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 
 import axios from './../../utils/axios';
-import Logger from './../../utils/logger';
+import { Debug } from './../../utils/logger';
 
 import ErrorList from './../../components/ErrorList';
 import { AppSetLoading } from './../../store/actions/app.action';
@@ -36,7 +36,7 @@ function AddMovie(props) {
         dispatch(AppSetLoading(true));
 
         try {
-            const { data } = await axios.post('/movies', { title, subTitle, thumbnail, year }, { 
+            await axios.post('/movies', { title, subTitle, thumbnail, year }, { 
                 headers: { Authorization: `Bearer ${userToken}` }
             })
 
@@ -49,7 +49,7 @@ function AddMovie(props) {
         }
     }
 
-    Logger.Debug(`[App][MainScreen][My Movies][Add Movie] Render`);
+    Debug(`[App][MainScreen][My Movies][Add Movie] Render`);
 
     return (
         <div className="container text-white">
@@ -60,13 +60,13 @@ function AddMovie(props) {
                         <div className="row">
                             <div className="col-md-6 mb-1">
                                 <div className="form mb-4">
-                                    <label className="form-label text-white font-weight-bold" for="title">Title</label>
+                                    <label className="form-label text-white font-weight-bold" htmlFor="title">Title</label>
                                     <input type="text" id="title" className="form-control border" value={title} onChange={(e) => setTitle(e.target.value)}/>
                                 </div>
                             </div>
                             <div className="col-md-6 mb-1">
                                 <div className="form mb-4">
-                                    <label className="form-label text-white font-weight-bold" for="alt-title">Alternative Title</label>
+                                    <label className="form-label text-white font-weight-bold" htmlFor="alt-title">Alternative Title</label>
                                     <input type="text" id="alt-title" className="form-control border" value={subTitle} onChange={(e) => setSubTitle(e.target.value)}/>
                                 </div>
                             </div>
@@ -74,23 +74,23 @@ function AddMovie(props) {
                         <div className="row">
                             <div className="col-md-8 mb-1">
                                 <div className="form mb-4">
-                                    <label className="form-label text-white font-weight-bold" for="thumbnail">Thumbnail URL</label>
+                                    <label className="form-label text-white font-weight-bold" htmlFor="thumbnail">Thumbnail URL</label>
                                     <input type="text" id="thumbnail" className="form-control border" value={thumbnail} onChange={(e) => setThumbnail(e.target.value)}/>
                                 </div>
                             </div>
                             <div className="col-md-4 mb-1">
                                 <div className="form mb-4">
-                                    <label className="form-label text-white font-weight-bold" for="year">Year</label>
+                                    <label className="form-label text-white font-weight-bold" htmlFor="year">Year</label>
                                     <input type="text" id="year" className="form-control border" value={year} onChange={(e) => setYear(e.target.value)}/>
                                 </div>
                             </div>
                         </div>
                         <div className="row">
                             <div className="col-md-2 mb-2">
-                                <button onClick={onClickBack} className="btn btn-white btn-block"><i class="fas fa-arrow-circle-left me-1"></i>Back</button>
+                                <button onClick={onClickBack} className="btn btn-white btn-block"><i className="fas fa-arrow-circle-left me-1"></i>Back</button>
                             </div>
                             <div className="col-md-10 mb-2">
-                                <button type="submit" className="btn btn-danger pbg-accent btn-block"><i class="fas fa-plus-circle me-1"></i>Add</button>
+                                <button type="submit" className="btn btn-danger pbg-accent btn-block"><i className="fas fa-plus-circle me-1"></i>Add</button>
                             </div>
                         </div>
                     </form>

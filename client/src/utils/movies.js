@@ -44,15 +44,16 @@ export function PadTimeText(num, size = 2) {
 }
 
 export function DurationSecondToText(duration) {
+    var text;
     if(duration >= 3600) {
         var hour = PadTimeText(Math.floor(duration / 3600));
         var remainSecond = Math.floor(duration % 3600);
         var minute = PadTimeText(Math.floor(remainSecond / 60));
         remainSecond = PadTimeText(remainSecond % 60);
 
-        var text = `${hour}:${minute}:${remainSecond}`;
+        text = `${hour}:${minute}:${remainSecond}`;
     } else {
-        var text = `${PadTimeText(Math.floor(duration / 60))}:${PadTimeText(Math.floor(duration % 60))}`;
+        text = `${PadTimeText(Math.floor(duration / 60))}:${PadTimeText(Math.floor(duration % 60))}`;
     }
 
     return text;

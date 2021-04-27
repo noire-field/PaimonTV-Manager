@@ -1,7 +1,8 @@
 import * as Actions from './../actionTypes';
 
 const initState = {
-    list: []
+    list: [],
+    myList: {}
 }
 
 const reducer = function(state = initState, action) {
@@ -18,6 +19,11 @@ const reducer = function(state = initState, action) {
             return {
                 ...state,
                 list
+            };
+        case Actions.SERIES_SET_MINE:
+            return {
+                ...state,
+                myList: { title: action.payload.title, movies: action.payload.movies }
             };
         default: return state;
     }

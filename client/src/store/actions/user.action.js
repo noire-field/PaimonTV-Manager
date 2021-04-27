@@ -1,8 +1,9 @@
-import axios from './../../utils/axios'
+import axios from './../../utils/axios';
+import { MapMoviesIntoSeries } from './../../utils/series';
 
 import * as Actions from '../actionTypes';
 import { AppSetLoading, AppSetState } from './app.action';
-import { SeriesSet } from './series.action';
+import { SeriesSet, SeriesSetMine } from './series.action';
 import { MoviesSet } from './movies.action';
 
 export function UserFetchData(redirect = false) {
@@ -24,10 +25,12 @@ export function UserFetchData(redirect = false) {
 
             const result = await Promise.all(promises);
             
-            const seriesData = result[0].data;
+            const seriesData = MapMoviesIntoSeries(result[0].data.series, result[1].data.movies);
+            const myListData = MapMoviesIntoSeries(result[0].data.myList, result[1].data.movies, true);
             const moviesData = result[1].data;
 
-            dispatch(SeriesSet(seriesData.series));
+            dispatch(SeriesSet(seriesData));
+            dispatch(SeriesSetMine('My List', myListData));
             dispatch(MoviesSet(moviesData.movies));
         } catch(e) {
             

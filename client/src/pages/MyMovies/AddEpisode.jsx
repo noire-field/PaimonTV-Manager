@@ -3,14 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Redirect, useHistory, useParams } from 'react-router-dom';
 
 import axios from './../../utils/axios';
-import Logger from './../../utils/logger';
+import { Debug } from './../../utils/logger';
 
 import { AppSetLoading } from './../../store/actions/app.action';
 import { UserFetchData } from './../../store/actions/user.action';
-import { MoviesSetSingle } from './../../store/actions/movies.action';
 import ErrorList from '../../components/ErrorList';
-import { set } from 'js-cookie';
-
 
 function AddEpisode(props) {
     const { movieId } = useParams();
@@ -29,7 +26,6 @@ function AddEpisode(props) {
     const [fileUrl, setFileUrl] = useState("");
     const [status, setStatus] = useState(0);
 
-    const [updated, setUpdated] = useState(false);
     const [errors, setErrors] = useState([]);
     
     if(!movie) return <Redirect to="/my-movies"/>
@@ -48,7 +44,7 @@ function AddEpisode(props) {
         dispatch(AppSetLoading(true));
 
         try {
-            const { data } = await axios.post(`/movies/${movieId}/episodes`, { id: episodeId, title, duration, url: fileUrl, status }, { 
+            await axios.post(`/movies/${movieId}/episodes`, { id: episodeId, title, duration, url: fileUrl, status }, { 
                 headers: { Authorization: `Bearer ${userToken}` }
             })
 
@@ -61,7 +57,7 @@ function AddEpisode(props) {
         }
     }
 
-    Logger.Debug(`[App][MainScreen][My Movies][Add Episode] Render`);
+    Debug(`[App][MainScreen][My Movies][Add Episode] Render`);
 
     return (
         <div className="container text-white">
@@ -73,19 +69,19 @@ function AddEpisode(props) {
                         <div className="row">
                             <div className="col-md-3 mb-1">
                                 <div className="form mb-4">
-                                    <label className="form-label text-white font-weight-bold" for="id">ID</label>
+                                    <label className="form-label text-white font-weight-bold" htmlFor="id">ID</label>
                                     <input type="text" id="id" className="form-control border" value={episodeId} onChange={(e) => setEpisodeID(e.target.value)}/>
                                 </div>
                             </div>
                             <div className="col-md-6 mb-1">
                                 <div className="form mb-4">
-                                    <label className="form-label text-white font-weight-bold" for="title">Title</label>
+                                    <label className="form-label text-white font-weight-bold" htmlFor="title">Title</label>
                                     <input type="text" id="title" className="form-control border" value={title} onChange={(e) => setTitle(e.target.value)}/>
                                 </div>
                             </div>
                             <div className="col-md-3 mb-1">
                                 <div className="form mb-4">
-                                    <label className="form-label text-white font-weight-bold" for="duration">Duration</label>
+                                    <label className="form-label text-white font-weight-bold" htmlFor="duration">Duration</label>
                                     <input type="number" id="duration" className="form-control border" min="0" max="99999" value={duration} onChange={(e) => setDuration(e.target.value)}/>
                                 </div>
                             </div>
@@ -93,13 +89,13 @@ function AddEpisode(props) {
                         <div className="row">
                             <div className="col-md-8 mb-1">
                                 <div className="form mb-4">
-                                    <label className="form-label text-white font-weight-bold" for="file-url">File URL</label>
+                                    <label className="form-label text-white font-weight-bold" htmlFor="file-url">File URL</label>
                                     <input type="text" id="file-url" className="form-control border" value={fileUrl} onChange={(e) => setFileUrl(e.target.value)}/>
                                 </div>
                             </div>
                             <div className="col-md-4 mb-1">
                                 <div className="form mb-4">
-                                    <label className="form-label text-white font-weight-bold" for="status">Status</label>
+                                    <label className="form-label text-white font-weight-bold" htmlFor="status">Status</label>
                                     <select id="status" className="form-select" value={status} onChange={(e) => setStatus(e.target.value)}>
                                         <option value="0">Required Processing</option>
                                         <option value="2">Ready</option>
@@ -109,10 +105,10 @@ function AddEpisode(props) {
                         </div>
                         <div className="row">
                             <div className="col-md-2 mb-2">
-                                <button onClick={onClickBack} className="btn btn-white btn-block"><i class="fas fa-arrow-circle-left me-1"></i>Back</button>
+                                <button onClick={onClickBack} className="btn btn-white btn-block"><i className="fas fa-arrow-circle-left me-1"></i>Back</button>
                             </div>
                             <div className="col-md-10 mb-2">
-                                <button type="submit" className="btn btn-danger pbg-accent btn-block"><i class="fas fa-plus-circle me-1"></i>Add</button>
+                                <button type="submit" className="btn btn-danger pbg-accent btn-block"><i className="fas fa-plus-circle me-1"></i>Add</button>
                             </div>
                         </div>
                     </form>

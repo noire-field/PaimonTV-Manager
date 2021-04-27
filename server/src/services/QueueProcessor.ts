@@ -26,6 +26,7 @@ class QueueProcessor {
         interval: null
     };
     episode!: Episode;
+    movie!: any;
     firebaseDB: firebase.database.Database;
     status: QueueStatus;
     client!: any;
@@ -39,16 +40,21 @@ class QueueProcessor {
         this.id = id;
         this.firebaseDB = firebaseDB;
         this.status = QueueStatus.Ready;
-
-        
     }
 
     GetStatus() { return this.status; }
     GetFileUrl() { return "./tmp/"+ this.item.id }
+
     async Process(item: QueueItemModel, callback: Callback) {
         this.Log(`Accepted: ${item.id}`);
         this.status = QueueStatus.Verifying;
         this.item = item;
+
+        // In case something went wrong, we can have a fallback log
+        // @ts-ignore
+        this.episode = { title: item.episodeId, url: "Unknown" };
+        this.movie = { title: item.movieId };
+        this.data.fetchedSize = 0;
 
         // Confirm with Firebase first (In case the user deleted it there)
         const queueItem = await this.firebaseDB.ref('queue').child(item.id).get();
@@ -57,16 +63,23 @@ class QueueProcessor {
             return;
         }
 
-        const episodeRef = await this.firebaseDB.ref('users').child(`${this.item.userId}/movies/${this.item.movieId}/episodes/${this.item.episodeId}`).get();
-        if(!episodeRef.exists()) { // Episode can not be found, delete it
+        const movieRef = await this.firebaseDB.ref('users').child(`${this.item.userId}/movies/${this.item.movieId}`).get();
+        if(!movieRef.exists()) { // Movie can not be found, delete it
+            this.ProcessError(`Movie information not found`);
+            return;
+        }
+
+        const movie = movieRef.val();
+        
+        //const episodeRef = await this.firebaseDB.ref('users').child(`${this.item.userId}/movies/${this.item.movieId}/episodes/${this.item.episodeId}`).get();
+        if(!movie.episodes || !movie.episodes[this.item.episodeId]) { // Episode can not be found, delete it
             this.ProcessError(`Episode information not found`);
             return;
         }
 
-        await this.firebaseDB.ref('queue').child(item.id).child('status').set(1);
-        await this.firebaseDB.ref('users').child(`${this.item.userId}/movies/${this.item.movieId}/episodes/${this.item.episodeId}/status`).set(1);
+        this.movie = movie;
+        const episodeInfo = movie.episodes[this.item.episodeId];
 
-        const episodeInfo = episodeRef.val();
         this.episode = {
             id: episodeInfo.id,
             title: episodeInfo.title,
@@ -75,6 +88,18 @@ class QueueProcessor {
             duration: episodeInfo.duration,
             progress: episodeInfo.progress
         }
+
+        if(episodeInfo.status > 0) { // No longer need to process
+            this.ProcessError(`This episode doesn't need to be processed as its status is ${episodeInfo.status}`);
+            return;
+        }
+
+        await this.firebaseDB.ref('queue').child(item.id).update({
+            movieTitle: this.movie.title,
+            episodeTitle: this.episode.title,
+            status: 1
+        });
+        await this.firebaseDB.ref('users').child(`${this.item.userId}/movies/${this.item.movieId}/episodes/${this.item.episodeId}/status`).set(1);
 
         if(this.episode.url.startsWith('https')) this.client = https;
         else this.client = http;
@@ -237,10 +262,23 @@ class QueueProcessor {
     }
 
     private async ProcessError(message: string) {
-        await this.firebaseDB.ref('queue').child(this.item.id).child('status').set(4);
-        await this.firebaseDB.ref('users').child(`${this.item.userId}/movies/${this.item.movieId}/episodes/${this.item.episodeId}/status`).set(3);
+        const promises = [
+            this.firebaseDB.ref('queue').child(this.item.id).child('status').set(4),
+            this.firebaseDB.ref('users').child(`${this.item.userId}/logs/`).push({
+                message: `Processing Error: ${message}`,
+                reference: `Movie: ${this.movie.title} / Episode: ${this.episode.title}`,
+                url: this.episode.url,
+                createdAt: new Date().getTime()
+            }),
+            this.firebaseDB.ref('users').child(`${this.item.userId}/movies/${this.item.movieId}/episodes/${this.item.episodeId}/status`).set(3)
+        ]
+        try {
+            await Promise.all(promises);
+        } catch(e) {
+            // Skippable errors no worry
+        }
         
-        this.Log(`Process Error: ${message}`);
+        this.Log(`Processing Error: ${message}`);
         this.callback(false, message);
         
         if(this.aliveChecker.interval) {

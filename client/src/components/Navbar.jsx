@@ -1,16 +1,14 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Cookies from 'js-cookie';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 import { AppSetState } from './../store/actions/app.action';
 import { UserSignOut } from './../store/actions/user.action';
 
 function Navbar(props) {
     const dispatch = useDispatch();
-    const location = useLocation();
-
-    console.log(location);
+    const user = useSelector(state => state.user.user);
 
     const onSignOut = (e) => {
         e.preventDefault();
@@ -23,23 +21,26 @@ function Navbar(props) {
     return (
         <nav className="navbar sticky-top navbar-expand-lg navbar-light bg-light border shadow">
             <div className="container-fluid">
-                <a className="navbar-brand" href="#">
+                <span className="navbar-brand">
                     <span className="me-1">PaimonTV</span>
                     <span className="font-weight-bold badge bg-dark text-light p-1">Dashboard</span>
-                </a>
+                </span>
                 <button className="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#navbar-main" aria-controls="navbar-main" aria-expanded="false" aria-label="Toggle navigation">
                     <i className="fas fa-bars"></i>
                 </button>
                 <div className="collapse navbar-collapse" id="navbar-main">
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                         <li className="nav-item">
-                            <NavLink to="/library" className="nav-link" activeClassName="nav-link active"><i class="fas fa-home me-1"></i>Home</NavLink>
+                            <NavLink to="/library" className="nav-link" activeClassName="nav-link active"><i className="fas fa-home me-1"></i>Home</NavLink>
                         </li>
                         <li className="nav-item">
                             <NavLink to="/my-movies" className="nav-link" activeClassName="nav-link active"><i className="fas fa-film me-1"></i>Movies</NavLink>
                         </li>
                         <li className="nav-item">
                             <NavLink to="/queue" className="nav-link" activeClassName="nav-link active"><i className="fas fa-cog me-1"></i>Queue</NavLink>
+                        </li>
+                        <li className="nav-item">
+                            <NavLink to="/logs" className="nav-link" activeClassName="nav-link active"><i class="fas fa-info-circle me-1"></i>Logs</NavLink>
                         </li>
                         {/*
                         <li className="nav-item dropdown">
@@ -64,8 +65,8 @@ function Navbar(props) {
 
                     <ul className="navbar-nav flex-row">
                         <li className="nav-item dropdown me-3 me-lg-1">
-                            <a className="nav-link d-sm-flex align-items-sm-center dropdown-toggle hidden-arrow"
-                                href="#" id="navbarDropdownMenuLink" role="button" data-mdb-toggle="dropdown" aria-expanded="false">
+                            <span className="nav-link d-sm-flex align-items-sm-center dropdown-toggle hidden-arrow"
+                                id="navbarDropdownMenuLink" role="button" data-mdb-toggle="dropdown" aria-expanded="false">
                                 <img
                                     src="https://mdbootstrap.com/img/new/avatars/1.jpg"
                                     className="rounded-circle"
@@ -73,10 +74,10 @@ function Navbar(props) {
                                     alt=""
                                     loading="lazy"
                                 />
-                                <strong className="d-none d-sm-block ms-1 me-1">Noire Bladefield</strong>
-                            </a>
+                                <strong className="d-none d-sm-block ms-1 me-1">{user.email}</strong>
+                            </span>
                             <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
-                                <li><a className="dropdown-item" onClick={onSignOut} href="#">Logout</a></li>
+                                <li><span className="dropdown-item" onClick={onSignOut}>Logout</span></li>
                             </ul>
                         </li>
                     </ul>

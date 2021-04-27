@@ -1,7 +1,4 @@
-import axios from './../../utils/axios';
-
 import * as Actions from '../actionTypes';
-import { AppSetLoading, AppSetState } from './app.action';
 
 export function SeriesSet(series) {
     return {
@@ -14,5 +11,12 @@ export function SeriesSetSingle(id, series) {
     return {
         type: Actions.SERIES_SET_SINGLE,
         payload: { id, series }
+    }
+}
+
+export function SeriesSetMine(title, movies) {
+    return {
+        type: Actions.SERIES_SET_MINE,
+        payload: { title, movies }
     }
 }

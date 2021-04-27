@@ -15,15 +15,13 @@ function Main(props) {
 
     const moviesArray = MoviesToArray(movieList);
 
-    console.log(moviesArray);
-
     const onClickAdd = useCallback(() => {
         history.push(`/my-movies/add-movie`);
-    })
+    }, [history])
 
     const onMovieClick = useCallback((movieId) => {
         history.push(`/my-movies/${movieId}/edit`);
-    });
+    }, [history]);
 
     return (
         <React.Fragment>
