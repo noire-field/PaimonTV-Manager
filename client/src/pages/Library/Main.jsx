@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
+import { Debug } from '../../utils/logger';
 
 import LibrarySection from './../../components/LibrarySection';
 
@@ -24,6 +25,8 @@ function Main(props) {
     const renderedSections = seriesArray.map((s) => {
         return <LibrarySection key={s.id} id={s.id} title={s.title} movies={s.movies} onSectionEdit={editSection} onMovieClick={onMovieClick}/>
     })
+
+    Debug(`App][MainScreen][Library][Main] Render`);
 
     return (
         <React.Fragment>

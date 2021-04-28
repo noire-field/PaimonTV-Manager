@@ -7,10 +7,13 @@ import AddMovie from './MyMovies/AddMovie';
 import EditMovie from './MyMovies/EditMovie';
 import AddEpisode from './MyMovies/AddEpisode';
 import EditEpisode from './MyMovies/EditEpisode';
+import { Debug } from '../utils/logger';
 
 function MyMovies(props) {
     const location = useLocation();
     const match = useRouteMatch();
+
+    Debug(`[App][MainScreen][My Movies] Render`);
 
     return (
         <div className="my-movies pt-5">
@@ -39,4 +42,4 @@ function MyMovies(props) {
     );
 }
 
-export default MyMovies;
+export default React.memo(MyMovies);

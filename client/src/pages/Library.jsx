@@ -5,10 +5,13 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import Main from './Library/Main';
 import AddSection from './Library/AddSection';
 import EditSection from './Library/EditSection';
+import { Debug } from '../utils/logger';
 
 function Library(props) {
     const location = useLocation();
     const match = useRouteMatch();
+
+    Debug(`[App][MainScreen][Library] Render`);
 
     return (
         <div className="container-fluid pt-5 library">
@@ -31,4 +34,4 @@ function Library(props) {
     );
 }
 
-export default Library;
+export default React.memo(Library);

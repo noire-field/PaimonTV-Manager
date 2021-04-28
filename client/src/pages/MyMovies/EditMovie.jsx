@@ -11,6 +11,7 @@ import { SeriesToArray } from './../../utils/series';
 import { AppSetLoading } from './../../store/actions/app.action';
 import { UserFetchData } from './../../store/actions/user.action';
 import { MoviesSetSingle } from './../../store/actions/movies.action';
+import { Debug } from '../../utils/logger';
 
 function EditMovie(props) {
     const { movieId } = useParams();
@@ -154,6 +155,9 @@ function EditMovie(props) {
             <td colSpan={6}><p className="mb-0 text-cener">There is no episode</p></td>
         </tr>
     )
+
+    Debug(`[App][MainScreen][My Movies][Add Movie] Render`);
+
 
     return (
         <div className="container text-white">

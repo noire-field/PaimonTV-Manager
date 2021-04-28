@@ -13,6 +13,7 @@ import { SeriesSetSingle } from './../../store/actions/series.action';
 import MovieList from './../../components/MovieList';
 import MovieItem from './../../components/MovieItem';
 import ErrorList from './../../components/ErrorList';
+import { Debug } from '../../utils/logger';
 
 function EditSection(props) {
     const { id } = useParams();
@@ -195,6 +196,8 @@ function EditSection(props) {
             }
         </div>
     );
+
+    Debug(`App][MainScreen][Library][Edit Section] Render`);
 
     return movieEditMode ? editMovieLayout : editSectionLayout;
 }

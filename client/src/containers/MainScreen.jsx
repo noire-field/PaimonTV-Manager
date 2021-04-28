@@ -6,11 +6,14 @@ import Navbar from './../components/Navbar';
 import Library from './../pages/Library';
 import MyMovies from '../pages/MyMovies';
 import Queue from '../pages/Queue';
+import Logs from '../pages/Logs';
+import { Debug } from '../utils/logger';
 
 function MainScreen(props) {
     const location = useLocation();
 
-    console.log(`[App][MainScreen] Render`);
+    Debug(`[App][MainScreen] Render`);
+    
     return (
         <div className="main-screen pbg-primary">
             <Navbar/>
@@ -28,6 +31,9 @@ function MainScreen(props) {
                         </Route>
                         <Route path="/queue">
                             <Queue/>
+                        </Route>
+                        <Route path="/logs">
+                            <Logs/>
                         </Route>
                     </Switch>
                 </CSSTransition>

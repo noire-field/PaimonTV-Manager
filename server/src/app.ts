@@ -8,6 +8,7 @@ import SeriesRouter from './routes/Series';
 import MoviesRouter from './routes/Movies';
 import EpisodesRouter from './routes/Episodes';
 import QueueRouter from './routes/Queue';
+import LogsRouter from './routes/Logs';
 
 import { ErrorHandler } from './middlewares/ErrorHandler';
 import { NotFoundError } from './errors/NotFoundError';
@@ -22,6 +23,7 @@ app.use('/api/series', SeriesRouter);
 app.use('/api/movies', MoviesRouter);
 app.use('/api/movies', EpisodesRouter);
 app.use('/api/queue', QueueRouter);
+app.use('/api/logs', LogsRouter);
 
 app.all('*', () => { throw new NotFoundError }); 
 app.use(ErrorHandler);

@@ -8,6 +8,7 @@ import MovieItem from './../../components/MovieItem';
 import { MoviesToArray } from '../../utils/movies';
 
 import thumbnailAdd from './../../assets/images/thumbnail-add.jpg';
+import { Debug } from '../../utils/logger';
 
 function Main(props) {
     const history = useHistory();
@@ -22,6 +23,8 @@ function Main(props) {
     const onMovieClick = useCallback((movieId) => {
         history.push(`/my-movies/${movieId}/edit`);
     }, [history]);
+
+    Debug(`[App][MainScreen][My Movies][Main] Render`);
 
     return (
         <React.Fragment>

@@ -8,7 +8,7 @@ import paimonLetter from './../assets/images/paimon-letter.png';
 
 import { AppSetLoading } from './../store/actions/app.action';
 import { UserSignIn, UserFetchData } from './../store/actions/user.action';
-
+import { Debug } from '../utils/logger';
 
 function LoginScreen(props) {
     const dispatch = useDispatch();
@@ -41,7 +41,7 @@ function LoginScreen(props) {
         } 
     }
 
-    console.log(`[App][LoginScreen] Render`);
+    Debug(`[App][LoginScreen] Render`);
 
     return (
         <div className="container">

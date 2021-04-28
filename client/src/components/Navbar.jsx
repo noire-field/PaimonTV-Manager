@@ -40,7 +40,7 @@ function Navbar(props) {
                             <NavLink to="/queue" className="nav-link" activeClassName="nav-link active"><i className="fas fa-cog me-1"></i>Queue</NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink to="/logs" className="nav-link" activeClassName="nav-link active"><i class="fas fa-info-circle me-1"></i>Logs</NavLink>
+                            <NavLink to="/logs" className="nav-link" activeClassName="nav-link active"><i className="fas fa-info-circle me-1"></i>Logs</NavLink>
                         </li>
                         {/*
                         <li className="nav-item dropdown">

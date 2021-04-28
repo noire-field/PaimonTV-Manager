@@ -20,9 +20,11 @@ class Queue {
         this.firebaseDB = ref;
 
         this.queueProcessors = [
-            new QueueProcessor(1, ref)//,
-            //new QueueProcessor(2, ref),
-            //new QueueProcessor(3, ref)
+            new QueueProcessor(1, ref),
+            new QueueProcessor(2, ref),
+            new QueueProcessor(3, ref),
+            new QueueProcessor(4, ref),
+            new QueueProcessor(5, ref)
         ]
 
         setInterval(this.CheckQueue.bind(this), 500);
@@ -40,6 +42,14 @@ class Queue {
         });
 
         if(cleanCount > 0) this.Log(`Cleaned tmp folder with ${cleanCount} file${cleanCount > 1 ? "s" : ''}`);
+    }
+
+    GetList() {
+        return this.queueList;
+    }
+    
+    GetProcessors() {
+        return this.queueProcessors;
     }
 
     async Add(item: QueueItemDocument) {
