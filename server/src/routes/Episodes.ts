@@ -126,6 +126,7 @@ async (req: Request, res: Response) => {
     const episodeData = { 
         title,
         duration,
+        progress: 0,
         url,
         status: Number(status)
     };
