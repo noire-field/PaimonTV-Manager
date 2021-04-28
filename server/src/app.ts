@@ -12,11 +12,17 @@ import LogsRouter from './routes/Logs';
 
 import { ErrorHandler } from './middlewares/ErrorHandler';
 import { NotFoundError } from './errors/NotFoundError';
+import cors from 'cors';
+
 
 const app = express();
+
 app.set('trust proxy', true);
 
 app.use(json());
+app.use(cors({
+    origin: 'https://paimontv.web.app'
+}));
 
 app.use('/api/auth', AuthRouter);
 app.use('/api/series', SeriesRouter);
