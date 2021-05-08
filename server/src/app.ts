@@ -40,12 +40,12 @@ const corsOptions = {
 }
 app.use(cors(corsOptions));
 
-app.use('/api/auth', AuthRouter);
-app.use('/api/series', SeriesRouter);
-app.use('/api/movies', MoviesRouter);
-app.use('/api/movies', EpisodesRouter);
-app.use('/api/queue', QueueRouter);
-app.use('/api/logs', LogsRouter);
+app.use('*/api/auth', AuthRouter);
+app.use('*/api/series', SeriesRouter);
+app.use('*/api/movies', MoviesRouter);
+app.use('*/api/movies', EpisodesRouter);
+app.use('*/api/queue', QueueRouter);
+app.use('*/api/logs', LogsRouter);
 
 app.all('*', () => { throw new NotFoundError }); 
 app.use(ErrorHandler);
