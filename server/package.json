@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node-dev src/index.ts",
-    "dev": "ts-node-dev src/test.ts"
+    "start": "ts-node src/index.ts",
+    "dev": "ts-node-dev src/index.ts",
+    "test": "ts-node-dev src/test.ts"
   },
   "author": "Noire Bladefield",
   "license": "ISC",

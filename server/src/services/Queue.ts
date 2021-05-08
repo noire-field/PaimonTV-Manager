@@ -33,11 +33,11 @@ class Queue {
         // Clean up the queue
         var cleanCount = 0;
         this.firebaseDB.ref('queue').set(null);
-        fs.readdir('./../../tmp', (err, files) => {
+        fs.readdir('./tmp', (err, files) => {
             if (err) throw err;
             for (const file of files) {
                 cleanCount++;
-                fs.unlink(`./../../tmp/${file}`, () => {});
+                fs.unlink(`./tmp/${file}`, () => {});
             }
         });
 
