@@ -1,5 +1,6 @@
 import axios from 'axios';
+import config from './../../config.json'
 
 export default axios.create({
-    baseURL: "https://lsgamerz.com:28421/api",
+    baseURL: config.API_URL,
 });

@@ -1,12 +1,15 @@
 
 import http, { ClientRequest, IncomingMessage } from 'http';
 import https from 'https';
+import _ from 'lodash';
 import fs from 'fs';
 import { getVideoDurationInSeconds } from 'get-video-duration';
 import AWS from 'aws-sdk';
 import firebase from 'firebase';
 
 import { s3, S3_BUCKET } from './../utils/aws';
+import { storage as gcStorage, GCS_BUCKET } from './../utils/gcloud';
+
 import { DurationSecondToText } from './../utils/movies';
 import { QueueItemModel, QueueStatus, Callback, QueueData, AliveCheck } from './../types/Queue';
 import { Episode } from './../types/Episode';
@@ -43,7 +46,7 @@ class QueueProcessor {
     }
 
     GetStatus() { return this.status; }
-    GetFileUrl() { return "./tmp/"+ this.item.id }
+    GetFileUrl() { return './tmp'+this.item.id; }
 
     async Process(item: QueueItemModel, callback: Callback) {
         this.Log(`Accepted: ${item.id}`);
@@ -216,47 +219,118 @@ class QueueProcessor {
 
     private async StartUpload() {
         this.status = QueueStatus.Uploading;
-        this.Log(`Start uploading to AWS S3...`);
-
         this.readStream = fs.createReadStream(this.GetFileUrl());
-        this.uploadRequest = s3.upload({ 
-            Bucket: S3_BUCKET!, 
-            Key: `users/${this.item.userId}/${this.item.id}`,
-            Body: this.readStream, 
-            ACL: 'public-read' 
-        },  async (err: any, data: AWS.S3.ManagedUpload.SendData) => {
-                if(err) {
+
+        switch(process.env.USE_CLOUD) {
+            case 'AWS':
+                this.Log(`Start uploading to AWS S3...`);
+                this.uploadRequest = s3.upload({ 
+                    Bucket: S3_BUCKET!, 
+                    Key: `users/${this.item.userId}/${this.item.id}`,
+                    Body: this.readStream, 
+                    ACL: 'public-read' 
+                },  async (err: any, data: AWS.S3.ManagedUpload.SendData) => {
+                        if(err) {
+                            await fs.unlinkSync(this.GetFileUrl());
+                            this.Log(`Deleted file: ${this.item.id}`);
+                            this.readStream.close();
+                            this.ProcessError(err.code);
+                            return;
+                        }
+        
+                        // Upload Completed
+                        await this.firebaseDB.ref('queue').child(this.item.id).child('status').set(3);
+        
+                        const url = data.Location;
+                        this.Log(`Upload completed`);
+                        
+                        await fs.unlinkSync(this.GetFileUrl());
+                        this.Log(`Deleted file: ${this.item.id}`);
+        
+                        await this.firebaseDB.ref('users').child(`${this.item.userId}/movies/${this.item.movieId}/episodes/${this.item.episodeId}/status`).set(2);
+                        await this.firebaseDB.ref('users').child(`${this.item.userId}/movies/${this.item.movieId}/episodes/${this.item.episodeId}/url`).set(url);
+                        
+                        this.readStream.close();
+
+                        this.status = QueueStatus.Ready;
+                        this.Log(`Processor is ready`);
+    
+                        this.callback(true, url);
+                    }
+                );
+        
+                this.uploadRequest.on('httpUploadProgress', this.UploadProgressAWS.bind(this));
+                break;
+            case 'GC':
+                this.Log(`Start uploading to Google Cloud Storage...`);
+                const targetFile = gcStorage.bucket(GCS_BUCKET!).file(`users/${this.item.userId}/${this.item.id}`);
+                const uploadStream = targetFile.createWriteStream();
+
+                var uploadedBytes = 0;
+                var throttledProgress = _.throttle(this.UploadProgressGD, 1000).bind(this);
+
+                this.readStream.on('data', (chunk) => {
+                    uploadedBytes += chunk.length;
+                    throttledProgress(uploadedBytes, this.data.fileSize);
+                });
+                
+                this.readStream.on('error', async (err) => {
                     await fs.unlinkSync(this.GetFileUrl());
                     this.Log(`Deleted file: ${this.item.id}`);
+
+                    this.readStream.close();
+                    this.ProcessError(err.message);
+                });
+
+                uploadStream.on('finish', async () => {
+                    await targetFile.makePublic();
+                    await this.firebaseDB.ref('queue').child(this.item.id).child('status').set(3);
+        
+                    const url = targetFile.publicUrl();
+                    this.Log(`Upload completed`);
                     
-                    this.ProcessError(err.code);
-                    return;
-                }
+                    await fs.unlinkSync(this.GetFileUrl());
+                    this.Log(`Deleted file: ${this.item.id}`);
+    
+                    await this.firebaseDB.ref('users').child(`${this.item.userId}/movies/${this.item.movieId}/episodes/${this.item.episodeId}/status`).set(2);
+                    await this.firebaseDB.ref('users').child(`${this.item.userId}/movies/${this.item.movieId}/episodes/${this.item.episodeId}/url`).set(url);
+                    
+                    this.readStream.close();
 
-                // Upload Completed
-                await this.firebaseDB.ref('queue').child(this.item.id).child('status').set(3);
+                    this.status = QueueStatus.Ready;
+                    this.Log(`Processor is ready`);
 
-                const url = data.Location;
-                this.Log(`Upload completed`);
-                
+                    this.callback(true, url);
+                })
+
+                uploadStream.on('error', async (err) => {
+                    await fs.unlinkSync(this.GetFileUrl());
+                    this.Log(`Deleted file: ${this.item.id}`);
+
+                    this.readStream.close();
+                    this.ProcessError(err.message);
+                })
+
+                this.readStream.pipe(uploadStream);
+
+                break;
+            default: 
                 await fs.unlinkSync(this.GetFileUrl());
                 this.Log(`Deleted file: ${this.item.id}`);
-
-                await this.firebaseDB.ref('users').child(`${this.item.userId}/movies/${this.item.movieId}/episodes/${this.item.episodeId}/status`).set(2);
-                await this.firebaseDB.ref('users').child(`${this.item.userId}/movies/${this.item.movieId}/episodes/${this.item.episodeId}/url`).set(url);
                 
-                this.status = QueueStatus.Ready;
-                this.Log(`Processor is ready`);
-
-                this.callback(true, url);
-            }
-        );
-
-        this.uploadRequest.on('httpUploadProgress', this.UploadProgress.bind(this));
+                this.ProcessError('There is no uploading service');
+                return;
+        }
     }
 
-    private async UploadProgress(progress: AWS.S3.ManagedUpload.Progress) {
+    private async UploadProgressAWS(progress: AWS.S3.ManagedUpload.Progress) {
         const percent = Math.round(progress.loaded / progress.total * 100);
+        this.Log(`Uploading ${percent}%`);
+        this.firebaseDB.ref('queue').child(`${this.item.id}/progress`).set(percent);
+    }
+
+    private async UploadProgressGD(uploadedBytes: number, fileSize: number) {
+        const percent = Math.round(uploadedBytes / fileSize * 100);
         this.Log(`Uploading ${percent}%`);
         this.firebaseDB.ref('queue').child(`${this.item.id}/progress`).set(percent);
     }
