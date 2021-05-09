@@ -29,7 +29,7 @@ function Main(props) {
     return (
         <React.Fragment>
             <h3 className="text-white ms-2 me-2 text-center">My Movies</h3>
-            <MovieList movies={moviesArray} className="flex-wrap justify-content-center" onMovieClick={onMovieClick} preList={<MovieItem image={thumbnailAdd} onClick={onClickAdd}/>}/>
+            <MovieList movies={moviesArray} className="flex-wrap justify-content-center sm-two-col" onMovieClick={onMovieClick} preList={<MovieItem image={thumbnailAdd} onClick={onClickAdd}/>}/>
         </React.Fragment>
     );
 }

@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs';
+import { resolve } from 'path';
 import firebase from 'firebase';
 
 import QueueProcessor from './QueueProcessor';
@@ -31,6 +32,7 @@ class Queue {
         console.log("Queue Connected");
 
         // Clean up the queue
+        /* Running in container so no worry
         var cleanCount = 0;
         this.firebaseDB.ref('queue').set(null);
         fs.readdir('./tmp', (err, files) => {
@@ -42,6 +44,7 @@ class Queue {
         });
 
         if(cleanCount > 0) this.Log(`Cleaned tmp folder with ${cleanCount} file${cleanCount > 1 ? "s" : ''}`);
+        */
     }
 
     GetList() {

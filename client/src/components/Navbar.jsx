@@ -74,7 +74,7 @@ function Navbar(props) {
                                     alt=""
                                     loading="lazy"
                                 />
-                                <strong className="d-none d-sm-block ms-1 me-1">{user.email}</strong>
+                                <strong className="d-inline-block d-sm-block ms-1 me-1">{user.email}</strong>
                             </span>
                             <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
                                 <li><span className="dropdown-item" onClick={onSignOut}>Logout</span></li>

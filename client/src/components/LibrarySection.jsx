@@ -11,7 +11,7 @@ function LibrarySection(props) {
                 <h3 className="text-white ms-2 me-2">{props.title}</h3>
                 <button onClick={(e) => { e.preventDefault(); props.onSectionEdit(props.id) }} className="btn btn-danger pbg-accent btn-sm px-2 py-1"><i className="fas fa-edit me-1"></i>Edit</button>
             </div>
-            <MovieList movies={arrayMovies} className="justify-content-lg-start justify-content-center" onMovieClick={props.onMovieClick}/>
+            <MovieList movies={arrayMovies} onMovieClick={props.onMovieClick}/>
         </div>
     );
 }
