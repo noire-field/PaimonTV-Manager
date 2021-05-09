@@ -155,8 +155,8 @@ class QueueProcessor {
                     }
                 } else {
                     this.aliveChecker.checkCount++;
-                    this.Log(`Download paused... retrying ${this.aliveChecker.checkCount}/10`);
-                    if(this.aliveChecker.checkCount >= 10) {
+                    this.Log(`Download paused... retrying ${this.aliveChecker.checkCount}/60`);
+                    if(this.aliveChecker.checkCount >= 60) {
                         this.downloadRequest.destroy();
 
                         await fs.unlinkSync(this.GetFileUrl());
