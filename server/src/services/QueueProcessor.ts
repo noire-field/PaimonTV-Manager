@@ -46,7 +46,7 @@ class QueueProcessor {
     }
 
     GetStatus() { return this.status; }
-    GetFileUrl() { return './tmp'+this.item.id; }
+    GetFileUrl() { return './tmp/'+this.item.id; }
 
     async Process(item: QueueItemModel, callback: Callback) {
         this.Log(`Accepted: ${item.id}`);
