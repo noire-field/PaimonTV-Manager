@@ -44,7 +44,13 @@ export function UserFetchData(redirect = false) {
 export function UserSignIn(id, email, token) {
     return {
         type: Actions.USER_SIGNIN,
-        payload: { id, email, token}
+        payload: { id, email, token }
+    }
+}
+
+export function UserGuestSignIn() {
+    return {
+        type: Actions.USER_GUESTSIGNIN
     }
 }
 

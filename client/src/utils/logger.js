@@ -1,3 +1,3 @@
 export const Debug = (message) => {
-    //console.log(message);
+    console.log(message);
 };

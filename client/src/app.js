@@ -10,7 +10,7 @@ import axios from './utils/axios';
 import { Debug } from './utils/logger';
 
 import { AppSetLoading, AppSetState } from './store/actions/app.action';
-import { UserSignIn, UserFetchData } from './store/actions/user.action';
+import { UserSignIn, UserFetchData, UserGuestSignIn } from './store/actions/user.action';
 
 import LoginScreen from './pages/LoginScreen';
 import MainScreen from './containers/MainScreen';
@@ -42,13 +42,21 @@ function App() {
                 dispatch(AppSetState(1));
             })
         } else { // No Key? Not Logged?
+            // A little hack
+            if(window.location.pathname.startsWith('/guest-watch')) {
+                dispatch(AppSetLoading(false));
+                dispatch(UserGuestSignIn());
+                dispatch(AppSetState(2));
+
+                return;
+            }
+
             dispatch(AppSetState(1));
         }
     }, [appState, dispatch]); // First Load
 
     Debug(`[App] Render (State: ${appState})`);
 
-    // Khá là là lồn
     return (
         <div>
             { appState === 1 &&

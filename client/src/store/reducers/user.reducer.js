@@ -2,6 +2,7 @@ import * as Actions from './../actionTypes';
 
 const initState = {
     auth: false,
+    guestMode: false,
     user: {
         id: "",
         email: "",
@@ -29,6 +30,17 @@ const reducer = function(state = initState, action) {
                     id: "",
                     email: "",
                     token: "",
+                }
+            }
+        case Actions.USER_GUESTSIGNIN:
+            return {
+                ...state,
+                auth: true,
+                guestMode: true,
+                user: {
+                    id: "guest",
+                    email: "Guest",
+                    token: "guest",
                 }
             }
 
