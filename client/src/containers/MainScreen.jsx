@@ -7,12 +7,12 @@ import Library from './../pages/Library';
 import MyMovies from '../pages/MyMovies';
 import Queue from '../pages/Queue';
 import Logs from '../pages/Logs';
-import WatchScreen from '../pages/WatchScreen';
+import SeriesDetail from '../pages/SeriesDetail';
 import { Debug } from '../utils/logger';
 
 function MainScreen(props) {
     const location = useLocation();
-    const isGuestWatch = location.pathname.startsWith('/guest-watch') ? true : false;
+    const isGuestWatch = location.pathname.startsWith('/shared') ? true : false;
 
     Debug(`[App][MainScreen] Render`);
     
@@ -37,8 +37,8 @@ function MainScreen(props) {
                         <Route path="/logs">
                             <Logs/>
                         </Route>
-                        <Route path="/guest-watch/:sharedId">
-                            <WatchScreen/>
+                        <Route path="/shared/:seriesId">
+                            <SeriesDetail/>
                         </Route>
                     </Switch>
                 </CSSTransition>

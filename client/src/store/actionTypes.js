@@ -11,3 +11,10 @@ export const SERIES_SET_MINE = 'SeriesSetMine';
 
 export const MOVIES_SET = 'MoviesSet';
 export const MOVIES_SET_SINGLE= 'MoviesSetSingle';
+
+export const WATCH_INIT = 'WatchInit';
+export const WATCH_SET_PLAYING = 'WatchSetPlaying';
+export const WATCH_SET_PROGRESS = 'WatchSetProgress';
+export const WATCH_REQUIRE_SEEK = 'WatchRequireSeek';
+export const WATCH_SET_BUFFERING = 'WatchSetBuffering';
+export const WATCH_SET_VOLUME = 'WatchSetVolume';

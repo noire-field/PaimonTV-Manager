@@ -43,7 +43,7 @@ function App() {
             })
         } else { // No Key? Not Logged?
             // A little hack
-            if(window.location.pathname.startsWith('/guest-watch')) {
+            if(window.location.pathname.startsWith('/shared')) {
                 dispatch(AppSetLoading(false));
                 dispatch(UserGuestSignIn());
                 dispatch(AppSetState(2));
