@@ -13,6 +13,7 @@ function VideoPlayer(props) {
 
     const playerRef = useRef(null);
     const isPlaying = useSelector(state => state.watch.isPlaying);
+    const videoUrl = useSelector(state => state.watch.video.url);
     const seek = useSelector(state => state.watch.seek);
     const volume = useSelector(state => state.watch.volume);
 
@@ -25,7 +26,6 @@ function VideoPlayer(props) {
     }, [seek, playerRef]);
 
     
-
     const onStart = () => {
         console.log("Start");
     }
@@ -49,11 +49,11 @@ function VideoPlayer(props) {
 
     return (
         <ReactPlayer 
-            ref={(playerRef)}
+            ref={playerRef}
             style={{ margin: 0, padding: 0, position: 'relative' }} height='99%' width='100%'
             onPlay={onPlay} onStart={onStart} onProgress={onProgress} onPause={onPause} onBuffer={onBuffer} onBufferEnd={onBufferEnd} onEnded={onEnded}
             playing={isPlaying} volume={volume}
-            url='https://storage.googleapis.com/paimontv/users/bm9pcmVmaWVsZEBnbWFpbC5jb20=/86edfc18-6e13-4f40-a11f-8eab72a25303'
+            url={videoUrl}
         />
     )
 }

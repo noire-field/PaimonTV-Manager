@@ -3,17 +3,21 @@ import styled from 'styled-components';
 
 import { DurationSecondToText } from './../../utils/movies';
 
+import { Debug } from '../../utils/logger';
+
 const EpisodeItem = (props) => {
-    var remainDuration = DurationSecondToText(400);
-    var durationProgress = Math.round((400 / 800) * 100);
+    Debug(`[App][MainScreen][SeriesDetail][Main][EpisodeItem] Render`);
+
+    var remainDuration = DurationSecondToText(props.episode.duration - props.episode.progress);
+    var durationProgress = Math.round((props.episode.progress / props.episode.duration) * 100);
 
     return (
-        <EpisodeContainer>
+        <EpisodeContainer onClick={props.onEpisodeClick.bind(this, props.index, props.episode)}>
             <EpisodeInfo>
-                <h4 className="mb-0">Episode Title</h4>
+                <h4 className="mb-0">{props.episode.title}</h4>
                 <h5 className="mb-0">{durationProgress >= 100 ? '--:--' : remainDuration}</h5>
             </EpisodeInfo>
-            <EpisodeProgress style={{ width: `50%` }}></EpisodeProgress>
+            <EpisodeProgress style={{ width: `${durationProgress}%` }}></EpisodeProgress>
         </EpisodeContainer>
     )
 }

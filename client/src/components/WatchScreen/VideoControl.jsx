@@ -61,8 +61,8 @@ function VideoPlayer(props) {
                 <VideoSlider value={sliding ? progress : video.progress} onChange={onSliderChange} max={1420} step={1}/>
                 <Controls>
                     <ControlsStart>
-                        <SeriesTitle>Monster Girl Doctor</SeriesTitle>
-                        <EpisodeTitle>Episode #1 [1080p]</EpisodeTitle>
+                        <SeriesTitle>{video.seriesTitle}</SeriesTitle>
+                        <EpisodeTitle>{video.title}</EpisodeTitle>
                     </ControlsStart>
                     <ControlsCenter>
                         <PlayPauseButton onClick={onTogglePlay} className={isPlaying ? 'fas fa-pause' : 'fas fa-play'}></PlayPauseButton>

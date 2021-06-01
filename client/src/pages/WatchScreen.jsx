@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router';
+import { useHistory, useParams } from 'react-router';
 import styled from 'styled-components';
 import { CSSTransition } from 'react-transition-group';
 
@@ -11,17 +11,21 @@ import VideoPlayer from './../components/WatchScreen/VideoPlayer';
 import VideoControl from './../components/WatchScreen/VideoControl';
 
 import { Debug } from '../utils/logger';
+import { WatchInit } from '../store/actions/watch.action';
 
 
 function WatchScreen(props) {
-    const { sharedId } = useParams();
+    const { episodeId: id, seriesId } = useParams();
+    const [index, episodeId] = id.split('-');
+
+    const dispatch = useDispatch();
+    const history = useHistory();
+
+    const movie = useSelector(state => state.shared.movie);
+    const playable = useSelector(state => state.watch.playable);
 
     const [showControls, setShowControls] = useState(true);
-
-    const hideControls = useCallback(debounce(() => {
-        setShowControls(false);
-    }, 1000), [])
-
+    const hideControls = useCallback(debounce(() => { setShowControls(false); }, 1000), [])
 
     useEffect(() => {
         const listener = document.addEventListener('mousemove', (e) => {
@@ -34,9 +38,19 @@ function WatchScreen(props) {
         }
     }, [showControls])
 
+    useEffect(() => {
+        if(movie.episodes[index] && movie.episodes[index].id == episodeId) {
+            dispatch(WatchInit(index,  movie.episodes[index], movie));
+        } else {
+            history.push(`/shared/${seriesId}`);
+        }
+    }, []);
+
     const buffering = useSelector(state => state.watch.buffering);
 
     Debug(`[App][MainScreen][WatchScreen] Render`);
+
+    if(!playable) return null;
 
     return (
         <PlayerContainer>

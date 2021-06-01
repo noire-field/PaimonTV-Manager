@@ -58,3 +58,24 @@ export function DurationSecondToText(duration) {
 
     return text;
 }
+
+export function ScanMovieEpisodes(episodes) {
+    var episodeIndex = 0;
+
+    for(var i = 0; i < episodes.length; i++) {
+        let ep = episodes[i];
+        let completedPercent = GetEpisodeCompletedRate(ep);
+
+        if(completedPercent >= 92) continue;
+        else {
+            episodeIndex = i;
+            break;
+        }
+    }
+
+    return episodeIndex;
+}
+
+export function GetEpisodeCompletedRate(episode) {
+    return Math.max(Math.min(Math.round(episode.progress / episode.duration * 100), 100), 0);
+}

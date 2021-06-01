@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
 import { v4 as uuidv4 } from 'uuid';
+import firebase from 'firebase';
 import { InternalServerError } from '../errors/InternalServerError';
 import { NotFoundError } from '../errors/NotFoundError';
 import { CurrentUser } from '../middlewares/CurrentUser';
@@ -95,6 +96,38 @@ async (req: Request, res: Response) => {
     });
 });
 
+// Share
+router.post('/share/:id', 
+CurrentUser, RequireAuth, ValidateRequest, 
+async (req: Request, res: Response) => {
+    const movieId = req.params.id;
+   
+    var movieRef = req.userFirebaseRef.child('movies').child(movieId);
+
+    const movie = await movieRef.get();
+    if(!movie.exists()) throw new NotFoundError();
+
+    if(movie.child('sharedId').exists()) {
+        return res.status(200).send({
+            success: true,
+            sharedId: movie.child('sharedId').toJSON()
+        })
+    }
+
+    const sharedId = uuidv4();
+    
+    await movieRef.update({ sharedId });
+    await firebase.database().ref('shared').child(sharedId).set({
+        user: req.currentUser?.id,
+        movie: movieId
+    });
+
+    return res.status(200).send({
+        success: true,
+        sharedId
+    });
+});
+
 // Delete
 router.delete('/:id', CurrentUser, RequireAuth, async (req: Request, res: Response) => {
     const movieId = req.params.id;
@@ -104,6 +137,12 @@ router.delete('/:id', CurrentUser, RequireAuth, async (req: Request, res: Respon
     const movie = await movieRef.get();
     if(!movie.exists()) throw new NotFoundError();
 
+    if(movie.hasChild('sharedId')) {
+        const movieData: any = movie.toJSON();
+        const shared = await firebase.database().ref('shared').child(movieData.sharedId).get()
+        if(shared.exists()) await firebase.database().ref('shared').child(movieData.sharedId).set(null);
+    }
+    
     movieRef.set(null);
 
     return res.status(200).send({

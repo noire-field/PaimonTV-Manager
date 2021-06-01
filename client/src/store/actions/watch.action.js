@@ -1,4 +1,15 @@
 import * as Actions from '../actionTypes';
+import { SharedUpdateEpisodeProgress } from './shared.action';
+
+export function WatchInit(index, episode, movie) {
+    return {
+        type: Actions.WATCH_INIT,
+        payload: {
+            index,
+            episode, movie
+        }
+    }
+}
 
 export function WatchSetPlaying(playing) {
     return {
@@ -8,6 +19,15 @@ export function WatchSetPlaying(playing) {
 }
 
 export function WatchSetProgress(progress) {
+    return (dispatch, getState) => {
+        const playingVideo = getState().watch.video;
+
+        dispatch(SharedUpdateEpisodeProgress(playingVideo.index, progress));
+        dispatch(WatchSetProgressTrue(progress));
+    }
+}
+
+export function WatchSetProgressTrue(progress) {
     return {
         type: Actions.WATCH_SET_PROGRESS,
         progress
@@ -34,5 +54,11 @@ export function WatchSetVolume(volume) {
     return {
         type: Actions.WATCH_SET_VOLUME,
         volume
+    }
+}
+
+export function WatchReset() {
+    return {
+        type: Actions.WATCH_RESET
     }
 }

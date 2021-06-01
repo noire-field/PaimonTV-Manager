@@ -10,6 +10,7 @@ import MoviesRouter from './routes/Movies';
 import EpisodesRouter from './routes/Episodes';
 import QueueRouter from './routes/Queue';
 import LogsRouter from './routes/Logs';
+import SharedRouter from './routes/Shared';
 
 import { ErrorHandler } from './middlewares/ErrorHandler';
 import { NotFoundError } from './errors/NotFoundError';
@@ -46,6 +47,7 @@ app.use('*/api/movies', MoviesRouter);
 app.use('*/api/movies', EpisodesRouter);
 app.use('*/api/queue', QueueRouter);
 app.use('*/api/logs', LogsRouter);
+app.use('*/api/shared', SharedRouter);
 
 app.all('*', () => { throw new NotFoundError }); 
 app.use(ErrorHandler);
