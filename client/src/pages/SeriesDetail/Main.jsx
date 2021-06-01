@@ -49,12 +49,12 @@ function Main(props) {
             <MainContainer>
                 <div className="container py-3">
                     <div className="row">
-                        <div className="col-lg-5 d-flex justify-content-center align-items-center">
+                        <div className="col-lg-5 d-flex justify-content-center mb-3">
                             <ReactImageAppear src={movie.thumbnail} className="shadow w-100 max-width-100 border" showLoader={false} placeholderStyle={{ backgroundColor: 'transparent' }}/>
                         </div>
-                        <div className="col-lg-7 pt-5 text-white">
-                            <h1 className="mb-0">{movie.title}</h1>
-                            <Subtitle className="mb-3">{movie.subTitle}</Subtitle>
+                        <div className="col-lg-7 pt-3 text-white">
+                            <Title className="mb-2 line-height-1">{movie.title}</Title>
+                            <Subtitle className="mb-2 line-height-1">{movie.subTitle}</Subtitle>
                             <h4>{movie.year} <EpisodesText>{movie.episodes.length} Tập</EpisodesText></h4>
                             <div className="mt-4 d-flex justify-content-start align-items-center">
                                 <button onClick={onClickWatch} className="btn btn-danger"><i className="fas fa-play me-2"></i>Xem Phim</button>
@@ -102,7 +102,11 @@ const PosterImage = {
 const EpisodesText = styled.span`
     background: white;
     color: black;
-    padding: 5px 10px;
+    padding: 3px 6px;
+`;
+
+const Title = styled.h2`
+
 `;
 
 const Subtitle = styled.h3`
@@ -113,7 +117,7 @@ const Subtitle = styled.h3`
 
 const EpisodeList = styled.div`
     width: 100%;
-    height: 480px;
+    height: 450px;
     overflow: auto;
 `;
 
