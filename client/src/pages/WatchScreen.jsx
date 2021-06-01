@@ -51,6 +51,7 @@ function WatchScreen(props) {
         // eslint-disable-next-line
         if(movie.episodes[index] && movie.episodes[index].id == episodeId) {
             dispatch(WatchInit(index,  movie.episodes[index], movie));
+            document.title = `${movie.title} - PaimonTV`
         } else {
             history.push(`/shared/${seriesId}`);
         }

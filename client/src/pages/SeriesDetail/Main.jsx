@@ -20,6 +20,8 @@ function Main(props) {
 
     const movie = useSelector(state => state.shared.movie);
 
+    document.title = `${movie.title} - PaimonTV`
+
     const onClickWatch = (e) => {
         e.preventDefault();
 
