@@ -46,7 +46,7 @@ const reducer = function(state = initState, action) {
         case Actions.WATCH_SET_PLAYING:
             return { ...state, isPlaying: action.playing };
         case Actions.WATCH_SET_PROGRESS:
-            video = { ... state.video, progress: action.progress }
+            video = { ...state.video, progress: action.progress }
             return { ...state, video };
         case Actions.WATCH_REQUIRE_SEEK:
             return { ...state, seek: { required: action.payload.required, to: action.payload.to }};

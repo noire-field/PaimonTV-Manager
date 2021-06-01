@@ -39,17 +39,18 @@ function SeriesDetail(props) {
             dispatch(AppSetLoading(false));
         }).catch((err) => {
             if(err.response) setErrors(err.response.data.errors);
-            else setErrors([{ message: 'Unable to connect to server' }]);
+            else setErrors([{ message: 'Paimon không thể kết nối tới máy chủ :(' }]);
 
             dispatch(AppSetLoading(false));
         });
+    // eslint-disable-next-line
     }, []);
     
     if(errors.length > 0) return (
         <MainContainer>
             <div>
                 <Paimon src={paimonLetter}/>
-                { errors.map((e) => <Error>{e.message}</Error> )}
+                { errors.map((e, i) => <Error key={i}>{e.message}</Error> )}
             </div>
         </MainContainer>
     )

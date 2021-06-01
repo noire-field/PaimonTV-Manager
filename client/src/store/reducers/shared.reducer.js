@@ -20,6 +20,8 @@ const reducer = function(state = initState, action) {
             movie.episodes[action.payload.episodeIndex].progress = action.payload.progress;
 
             return { ...state, movie };
+        case Actions.SHARED_RESET:
+            return { ...initState }
         default: return state;
     }
 }

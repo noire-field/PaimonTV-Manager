@@ -25,13 +25,17 @@ export function SharedUpdateEpisodeProgress(episodeIndex, progress) {
 }
 
 export function SharedUpdateEpisodeProgressTrue(episodeIndex, progress) {
-    cookie.set('')
-
     return {
         type: Actions.SHARED_UPDATE_EPISODE_PROGRESS,
         payload: {
             episodeIndex,
             progress
         }
+    };
+}
+
+export function SharedReset() {
+    return {
+        type: Actions.SHARED_RESET
     };
 }

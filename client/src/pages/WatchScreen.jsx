@@ -13,6 +13,8 @@ import VideoControl from './../components/WatchScreen/VideoControl';
 import { Debug } from '../utils/logger';
 import { WatchInit } from '../store/actions/watch.action';
 
+// A little hack to get rid of console error and memory leak.
+var allowDebounced = false;
 
 function WatchScreen(props) {
     const { episodeId: id, seriesId } = useParams();
@@ -25,25 +27,34 @@ function WatchScreen(props) {
     const playable = useSelector(state => state.watch.playable);
 
     const [showControls, setShowControls] = useState(true);
-    const hideControls = useCallback(debounce(() => { setShowControls(false); }, 1000), [])
+    // eslint-disable-next-line
+    const hideControls = useCallback(debounce(() => { 
+        if(allowDebounced) setShowControls(false); 
+    }, 1000), [])
 
     useEffect(() => {
+        allowDebounced = true;
         const listener = document.addEventListener('mousemove', (e) => {
-            if(!showControls) setShowControls(true);
+            if(allowDebounced && !showControls) setShowControls(true);
             hideControls();
         });
 
         return () => {
+            allowDebounced = false;
+            hideControls.cancel();
             document.removeEventListener('mousemove', listener);
         }
+    // eslint-disable-next-line
     }, [showControls])
 
     useEffect(() => {
+        // eslint-disable-next-line
         if(movie.episodes[index] && movie.episodes[index].id == episodeId) {
             dispatch(WatchInit(index,  movie.episodes[index], movie));
         } else {
             history.push(`/shared/${seriesId}`);
         }
+    // eslint-disable-next-line
     }, []);
 
     const buffering = useSelector(state => state.watch.buffering);
@@ -82,6 +93,7 @@ const Wrapper = styled.div`
     position: relative;
     width: 100%;
     height: 100%;
+    overflow: hidden;
 `;
 
 const VideoLoading = styled.div`

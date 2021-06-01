@@ -1,3 +1,6 @@
+import config from './../config.json'
+
 export const Debug = (message) => {
-    console.log(message);
+    if(config.DEBUG)
+        console.log(message);
 };

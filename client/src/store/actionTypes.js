@@ -22,3 +22,4 @@ export const WATCH_RESET = 'WatchReset';
 
 export const SHARED_SET_LOADED = 'SharedSetLoaded';
 export const SHARED_UPDATE_EPISODE_PROGRESS = 'SharedUpdateEpisodeProgress';
+export const SHARED_RESET = 'SharedReset';

@@ -32,12 +32,11 @@ function Main(props) {
     const onEpisodeClick = useCallback((index, episode) => {
         history.push(`/shared/${seriesId}/watch/${index}-${episode.id}`);
         dispatch(WatchSetPlaying(true)); // Autoplay by user action
-        //if(episode.progress > 3) dispatch(WatchRequireSeek(true, episode.progress));
-    }, []);
+    }, [dispatch, history, seriesId]);
 
     useEffect(() => {
         dispatch(WatchReset());
-    }, [])
+    }, [dispatch])
 
     return (
         <React.Fragment>
