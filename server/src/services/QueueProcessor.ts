@@ -284,7 +284,10 @@ class QueueProcessor {
 
                 uploadStream.on('finish', async () => {
                     await targetFile.makePublic();
-                    await targetFile.setMetadata({ contentType: 'video/mp4' });
+                    await targetFile.setMetadata({ 
+                        contentType: 'video/mp4',
+                        cacheControl: 'max-age=0'
+                    });
                   
                     await this.firebaseDB.ref('queue').child(this.item.id).child('status').set(3);
         
