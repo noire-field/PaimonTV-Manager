@@ -147,7 +147,9 @@ function EditSection(props) {
             <div className="row">
                 <div className="col-lg-4 offset-lg-4 text-center pt-5">
                     <button onClick={onBack} className="btn btn-white mb-3"><i className="fas fa-arrow-circle-left me-1"></i>Back</button>
-                    <MovieItem image={selectedMovie.data.thumbnail}/>
+                    <div className="d-flex justify-content-center">
+                        <MovieItem image={selectedMovie.data.thumbnail}/>
+                    </div>
                     <h4 className="text-white mt-2 mb-5">{selectedMovie.data.title}</h4>
                     <div className="flex justify-content-center aligns-items-center">
                         <Link to={`/my-movies/${selectedMovie.id}/edit`} className="btn btn-warning btn-sm me-1"><i className="fas fa-edit me-1"></i>Edit movie</Link>

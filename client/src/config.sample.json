@@ -1,3 +1,4 @@
 {
+    "DEBUG": false,
     "API_URL": "http://paimontv.com/api"
 }

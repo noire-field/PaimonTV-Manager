@@ -2,6 +2,11 @@ $color-primary: #141414;
 $color-accent: #d9534f;
 $color-accent-dark: #bd2722;
 
+.link-wrap {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
 .line-height-1 {
     line-height: 1;
 }

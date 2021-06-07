@@ -46,7 +46,7 @@ function Logs(props) {
                     <div className="row mb-3">
                         { logs && logs.map((l, i) => {
                             return (
-                                <div key={i} className="col-md-6 mb-2">
+                                <div key={i} className="col-md-12 mb-2">
                                     <LogItem log={l}/>
                                 </div>
                             )

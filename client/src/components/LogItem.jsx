@@ -8,8 +8,8 @@ function LogItem(props) {
             <div className="card-body">
                 <div>
                     <h5 className="card-title mb-2">{reference}</h5>
-                    <p className="card-text m-0 p-0">Message: <b>{message}</b></p>
-                    <p className="card-text m-0 p-0">URL: <b>{url}</b> - Time: <b>{new Date(createdAt).toLocaleString()}</b></p>
+                    <p className="card-text m-0 p-0">Time: <b>{new Date(createdAt).toLocaleString()}</b> - Message: <b>{message}</b></p>
+                    <p className="card-text m-0 p-0 link-wrap">URL: <b>{url}</b></p>
                 </div>
             </div>
         </div>
