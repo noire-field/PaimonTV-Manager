@@ -65,7 +65,7 @@ function VideoPlayer(props) {
     return (
         <Container>
             <Wrapper>
-                <VideoSlider value={sliding ? progress : video.progress} onChange={onSliderChange} max={1420} step={1}/>
+                <VideoSlider value={sliding ? progress : video.progress} onChange={onSliderChange} max={video.duration} step={1}/>
                 <Controls>
                     <ControlsStart>
                         <div className="d-flex flex-row">
