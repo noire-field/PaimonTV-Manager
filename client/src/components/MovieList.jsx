@@ -11,7 +11,7 @@ function MovieList(props) {
                 timeout={500}
                 classNames="item"
             >
-                <MovieItem key={m.id} styles={{...props.styles}} id={m.id} image={m.thumbnail} onClick={props.onMovieClick}/>
+                <MovieItem key={m.id} styles={{...props.styles}} id={m.id} image={m.thumbnail} onClick={props.onMovieClick} episodeInfo={`${m.episodeCount} Tập`}/>
             </CSSTransition>
         );
     })

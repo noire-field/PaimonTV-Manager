@@ -9,7 +9,8 @@ export function MoviesToArray(movies) {
             subTitle: movies[key].subTitle || "",
             thumbnail: movies[key].thumbnail,
             year: movies[key].year,
-            createdAt: movies[key].createdAt
+            createdAt: movies[key].createdAt,
+            episodeCount: movies[key].episodes != undefined ? Object.keys(movies[key].episodes).length : 0
         });
     }
 
