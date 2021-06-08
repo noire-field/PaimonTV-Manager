@@ -51,6 +51,7 @@ $color-accent-dark: #bd2722;
     }
 
     &-item {
+        position: relative;
         flex: 0 0 auto;
         padding: 10px;
 
@@ -77,6 +78,21 @@ $color-accent-dark: #bd2722;
                 transform: scale(1.025);
             }
         }
+    }
+
+    &-episode-info {
+        position: absolute;
+        margin-bottom: 0;
+        bottom: 15px;
+        left: 50%;
+        background: rgba(189,39,34,0.9);
+        color: white;
+        padding-left: 5px;
+        padding-right: 5px;
+        letter-spacing: 1px;
+        font-weight: bold;
+        transform: translateX(-50%);
+        font-size: 0.75em;
     }
 }
 

@@ -63,12 +63,13 @@ export function MapMoviesIntoSeries(seriesList, movieList, singleSeries=false) {
 
 export function SeriesMoviesToArray(movies) {
     const movieList = [];
-    
+
     for(const movieId in movies) {
         const movie = movies[movieId];
         movieList.push({
             id: movieId,
             ...movie.data,
+            episodeCount: movie.data.episodes != undefined ? Object.keys(movie.data.episodes).length : 0,
             addedAt: movie.addedAt
         });
     }
