@@ -31,7 +31,10 @@ function Navbar(props) {
                 <div className="collapse navbar-collapse" id="navbar-main">
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                         <li className="nav-item">
-                            <NavLink to="/library" className="nav-link" activeClassName="nav-link active"><i className="fas fa-home me-1"></i>Home</NavLink>
+                            <NavLink to="/home" className="nav-link" activeClassName="nav-link active"><i className="fas fa-home me-1"></i>Home</NavLink>
+                        </li>
+                        <li className="nav-item">
+                            <NavLink to="/library" className="nav-link" activeClassName="nav-link active"><i className="fa fa-list me-1"></i>Library</NavLink>
                         </li>
                         <li className="nav-item">
                             <NavLink to="/my-movies" className="nav-link" activeClassName="nav-link active"><i className="fas fa-film me-1"></i>Movies</NavLink>

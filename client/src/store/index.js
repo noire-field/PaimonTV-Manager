@@ -6,6 +6,7 @@ import seriesReducer from './reducers/series.reducer';
 import moviesReducer from './reducers/movies.reducer';
 import watchReducer from './reducers/watch.reducer';
 import sharedReducer from './reducers/shared.reducer';
+import homeReducer from './reducers/home.reducer';
 
 export default combineReducers({
     app: appReducer,
@@ -13,5 +14,6 @@ export default combineReducers({
     series: seriesReducer,
     movies: moviesReducer,
     watch: watchReducer,
-    shared: sharedReducer
+    shared: sharedReducer,
+    home: homeReducer
 });
