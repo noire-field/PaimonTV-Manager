@@ -8,6 +8,7 @@ import { Debug } from './../../utils/logger';
 import { AppSetLoading } from './../../store/actions/app.action';
 import { UserFetchData } from './../../store/actions/user.action';
 import ErrorList from '../../components/ErrorList';
+import { GenerateEpisodeID } from '../../utils/movies';
 
 function AddEpisode(props) {
     const { movieId } = useParams();
@@ -20,8 +21,9 @@ function AddEpisode(props) {
     
     const movie = moviesList[movieId];
 
-    const [episodeId, setEpisodeID] = useState("");
-    const [title, setTitle] = useState("");
+    const generatedID = GenerateEpisodeID(movie.episodes || null);
+    const [episodeId, setEpisodeID] = useState(generatedID);
+    const [title, setTitle] = useState(`Episode #${generatedID} [p]`);
     const [duration, setDuration] = useState(0);
     const [fileUrl, setFileUrl] = useState("");
     const [status, setStatus] = useState(0);
