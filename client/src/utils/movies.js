@@ -80,3 +80,8 @@ export function ScanMovieEpisodes(episodes) {
 export function GetEpisodeCompletedRate(episode) {
     return Math.max(Math.min(Math.round(episode.progress / episode.duration * 100), 100), 0);
 }
+
+export function GenerateEpisodeID(episodes) {
+    if(!episodes) return 1;
+    return Object.keys(episodes).length + 1;
+}
