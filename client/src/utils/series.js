@@ -69,7 +69,7 @@ export function SeriesMoviesToArray(movies) {
         movieList.push({
             id: movieId,
             ...movie.data,
-            episodeCount: movie.data.episodes != undefined ? Object.keys(movie.data.episodes).length : 0,
+            episodeCount: movie.data.episodes !== undefined ? Object.keys(movie.data.episodes).length : 0,
             addedAt: movie.addedAt
         });
     }

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useParams } from 'react-router';
 import styled from 'styled-components';
@@ -13,15 +13,19 @@ import VideoControl from './../components/WatchScreen/VideoControl';
 import { Debug } from '../utils/logger';
 import { WatchInit } from '../store/actions/watch.action';
 
-// A little hack to get rid of console error and memory leak.
-var allowDebounced = false;
-
 function WatchScreen(props) {
+    Debug(`[App][MainScreen][WatchScreen] Render`);
+
     const { episodeId: id, seriesId } = useParams();
     const [index, episodeId] = id.split('-');
 
     const dispatch = useDispatch();
     const history = useHistory();
+
+    // A little hack :)
+    const refPlayPause = useRef();
+    const refBackward = useRef();
+    const refForward = useRef();
 
     const movie = useSelector(state => state.shared.movie);
     const playable = useSelector(state => state.watch.playable);
@@ -29,23 +33,48 @@ function WatchScreen(props) {
     const [showControls, setShowControls] = useState(true);
     // eslint-disable-next-line
     const hideControls = useCallback(debounce(() => { 
-        if(allowDebounced) setShowControls(false); 
-    }, 1000), [])
+        setShowControls(false); 
+    }, 3000), [])
 
     useEffect(() => {
-        allowDebounced = true;
-        const listener = document.addEventListener('mousemove', (e) => {
-            if(allowDebounced && !showControls) setShowControls(true);
+        const onMouseAction = () => {
+            if(!showControls) setShowControls(true);
             hideControls();
-        });
+        }
+
+        document.addEventListener('mousemove', onMouseAction);
+        document.addEventListener('click', onMouseAction);
+        document.addEventListener('keydown', onKeyboardPress);
 
         return () => {
-            allowDebounced = false;
             hideControls.cancel();
-            document.removeEventListener('mousemove', listener);
+
+            document.removeEventListener('mousemove', onMouseAction);
+            document.removeEventListener('click', onMouseAction);
+            document.removeEventListener('keydown', onKeyboardPress);
         }
     // eslint-disable-next-line
     }, [showControls])
+
+    const onKeyboardPress = (e) => {
+        switch(e.code) {
+            case 'Enter':
+            case 'Space':
+                if(!showControls) setShowControls(true);
+                else refPlayPause.current.click();
+                break;
+            case 'ArrowLeft':
+                if(!showControls) setShowControls(true);
+                else refBackward.current.click();
+                break;
+            case 'ArrowRight':
+                if(!showControls) setShowControls(true);
+                else refForward.current.click();
+                break;
+            default:
+                break;
+        }
+    }
 
     useEffect(() => {
         // eslint-disable-next-line
@@ -60,8 +89,6 @@ function WatchScreen(props) {
 
     const buffering = useSelector(state => state.watch.buffering);
 
-    Debug(`[App][MainScreen][WatchScreen] Render`);
-
     if(!playable) return null;
 
     return (
@@ -75,7 +102,7 @@ function WatchScreen(props) {
                     </div>
                 </VideoLoading> }
                 <CSSTransition in={showControls} timeout={250} classNames="anim-slideup-loading" unmountOnExit>
-                    <VideoControl/>
+                    <VideoControl refPlayPause={refPlayPause} refBackward={refBackward} refForward={refForward}/>
                 </CSSTransition>
             </Wrapper>
         </PlayerContainer>

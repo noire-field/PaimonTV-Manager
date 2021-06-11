@@ -8,7 +8,7 @@ import Slider from '@material-ui/core/Slider';
 import styled from 'styled-components';
 
 import { DurationSecondToText } from './../../utils/movies';
-import { WatchRequireSeek, WatchSetPlaying, WatchSetProgress, WatchSetVolume } from './../../store/actions/watch.action'
+import { WatchRequireSeek, WatchSetPlaying, WatchSetProgress, WatchSetVolume, WatchSetBuffering } from './../../store/actions/watch.action'
 
 import { Debug } from '../../utils/logger';
 
@@ -33,6 +33,9 @@ function VideoPlayer(props) {
 
     const onTogglePlay = () => {
         dispatch(WatchSetPlaying(!isPlaying));
+        if(isPlaying) { // Stop
+            dispatch(WatchSetBuffering(false));
+        }
     }
 
     const onSliderChange = (event, value) => {
@@ -44,6 +47,16 @@ function VideoPlayer(props) {
 
     const OnVolumeSliderChange = (event, value) => {
         onVideoVolume(value);
+    }
+
+    const onFastMove = (forward) => {
+        var targetProgress = (sliding ? progress : video.progress) + (forward ? 10 : -10);
+        targetProgress = Math.max(0, Math.min(targetProgress, video.duration));
+
+        if(!sliding) setSliding(true);
+
+        setProgress(targetProgress);
+        onVideoSeek(targetProgress);
     }
 
     // eslint-disable-next-line
@@ -77,7 +90,9 @@ function VideoPlayer(props) {
                         </div>
                     </ControlsStart>
                     <ControlsCenter>
-                        <PlayPauseButton onClick={onTogglePlay} className={isPlaying ? 'fas fa-pause' : 'fas fa-play'}></PlayPauseButton>
+                        <FastButton ref={props.refBackward} onClick={onFastMove.bind(this, false)} className='fas fa-backward'></FastButton>
+                        <PlayPauseButton ref={props.refPlayPause} onClick={onTogglePlay} className={isPlaying ? 'fas fa-pause' : 'fas fa-play'}></PlayPauseButton>
+                        <FastButton ref={props.refForward} onClick={onFastMove.bind(this, true)} className='fas fa-forward'></FastButton>
                     </ControlsCenter>
                     <ControlsEnd>
                         <VolumeIcon className={`fas ${ muted || volume <= 0 ? 'fa-volume-mute' : volume >= 0.35 ? 'fa-volume-up' : 'fa-volume-down' }`}></VolumeIcon>
@@ -152,6 +167,20 @@ const Controls = styled.div`
 `;
 
 const PlayPauseButton = styled.i`
+    transition: .2s all;
+    font-size: 2em;
+    color: white;
+
+    :hover {
+        transform: scale(1.1);
+        cursor: pointer;
+    }
+
+    margin-left: 30px;
+    margin-right: 30px;
+`
+
+const FastButton = styled.i`
     transition: .2s all;
     font-size: 2em;
     color: white;
