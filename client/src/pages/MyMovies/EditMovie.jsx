@@ -31,6 +31,7 @@ function EditMovie(props) {
     const [thumbnail, setThumbnail] = useState(movie ? movie.thumbnail : "");
     const [year, setYear] = useState(movie ? movie.year : "");
     const [addSeries, setAddSeries] = useState('my-list');
+    const [shortUrl, setShortUrl] = useState(movie ? (movie.sharedId ? movie.sharedId : "") : "");
 
     const [updated, setUpdated] = useState(false);
     const [errors, setErrors] = useState([]);
@@ -116,6 +117,34 @@ function EditMovie(props) {
         }
     }
 
+    const onSetShortUrl = async (e) => {
+        e.preventDefault();
+
+        setUpdated(false);
+        setErrors([]);
+        dispatch(AppSetLoading(true));
+
+        try {
+            axios.post(`/movies/share/${movieId}`, {
+                shortUrl
+            }, { 
+                headers: { Authorization: `Bearer ${userToken}` }
+            }).then(({ data }) => {
+                setUpdated(true);
+                setShortUrl(data.sharedId);
+                dispatch(AppSetLoading(false));
+                dispatch(UserFetchData(true));
+            }).catch((err) => {
+                dispatch(AppSetLoading(false));
+    
+                if(err.response) alert(err.response.data.errors[0].message);
+            })
+        } catch(err) {
+            dispatch(AppSetLoading(false));
+            setErrors(err.response.data.errors);
+        }
+    }
+
     const onClickAddEpisode = (e) => {
         e.preventDefault();
         history.push(`/my-movies/${movieId}/add-episode`);
@@ -157,7 +186,6 @@ function EditMovie(props) {
     )
 
     Debug(`[App][MainScreen][My Movies][Add Movie] Render`);
-
 
     return (
         <div className="container text-white">
@@ -217,24 +245,43 @@ function EditMovie(props) {
                             </div>
                         </div>
                     </form>
-                    <h3 className="mb-3">Add To Section</h3>
-                    <form>
-                        <div className="row">
-                            <div className="col-md-6">
-                                <div className="form mb-2">
-                                    <select className="form-select" value={addSeries} onChange={(e) => setAddSeries(e.target.value)}>
-                                        <option value='my-list'>My List</option>
-                                        { series.map((s) => {
-                                            return <option key={s.id} value={s.id}>{s.title}</option>
-                                        })}
-                                    </select>
+                    <div className="row mb-3">
+                        <div className="col-lg-6">
+                            <h3>Add To Section</h3>
+                            <form>
+                                <div className="row">
+                                    <div className="col-md-8">
+                                        <div className="form mb-2">
+                                            <select className="form-select" value={addSeries} onChange={(e) => setAddSeries(e.target.value)}>
+                                                <option value='my-list'>My List</option>
+                                                { series.map((s) => {
+                                                    return <option key={s.id} value={s.id}>{s.title}</option>
+                                                })}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-4">
+                                        <button onClick={onSeriesAddMovie} className="btn btn-info btn-block"><i className="fas fa-plus-circle me-1"></i>Add</button>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="col-md-2">
-                                <button onClick={onSeriesAddMovie} className="btn btn-info btn-block"><i className="fas fa-plus-circle me-1"></i>Add</button>
-                            </div>
+                            </form>
                         </div>
-                    </form>
+                        <div className="col-lg-6">
+                            <h3>Custom Url</h3>
+                            <form>
+                                <div className="row">
+                                    <div className="col-md-8">
+                                        <div className="form mb-2">
+                                            <input type="text" className="form-control border" value={shortUrl} onChange={(e) => setShortUrl(e.target.value)} placeholder='Custom url is permanent' disabled={movie.sharedId && movie.sharedId.length > 0}/>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-4">
+                                        <button onClick={onSetShortUrl} className="btn btn-danger btn-block" disabled={movie.sharedId && movie.sharedId.length > 0}><i className="fas fa-check-circle me-1"></i>Set</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div className="row">

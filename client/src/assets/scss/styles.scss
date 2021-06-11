@@ -2,6 +2,11 @@ $color-primary: #141414;
 $color-accent: #d9534f;
 $color-accent-dark: #bd2722;
 
+:root {
+    --mdb-font-roboto:  'Kanit', 'Roboto', sans-serif !important;
+    font-family: 'Kanit', 'Roboto', sans-serif !important;
+}
+
 .link-wrap {
     word-wrap: break-word;
     overflow-wrap: break-word;
