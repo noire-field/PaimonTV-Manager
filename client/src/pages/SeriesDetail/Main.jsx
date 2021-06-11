@@ -46,7 +46,9 @@ function Main(props) {
                 background: `url('${movie.thumbnail}')`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat'
+                backgroundRepeat: 'no-repeat',
+                filter: 'blur(4px) brightness(50%)',
+                '-webkit-filter': 'blur(4px) brightness(50%)'
             }}/>
             <MainContainer>
                 <div className="container py-3">
