@@ -7,6 +7,7 @@ import { NotFoundError } from '../errors/NotFoundError';
 import { CurrentUser } from '../middlewares/CurrentUser';
 import { ValidateRequest } from '../middlewares/ValidateRequest';
 import { RequireAuth } from '../middlewares/RequireAuth';
+import { BadRequestError } from '../errors/BadRequestError';
 
 const router = express.Router();
 
@@ -97,10 +98,13 @@ async (req: Request, res: Response) => {
 });
 
 // Share
-router.post('/share/:id', 
+router.post('/share/:id', [
+    body('shortUrl').isLength({ min: 0, max: 64 }).withMessage('Short Url is invalid')
+],
 CurrentUser, RequireAuth, ValidateRequest, 
 async (req: Request, res: Response) => {
     const movieId = req.params.id;
+    const { shortUrl } = req.body;
    
     var movieRef = req.userFirebaseRef.child('movies').child(movieId);
 
@@ -114,18 +118,29 @@ async (req: Request, res: Response) => {
         })
     }
 
-    const sharedId = uuidv4();
+    var sharedId = uuidv4();
+    if(shortUrl && shortUrl.length > 0) {
+        sharedId = shortUrl;
+
+        // Check available
+        const thisShare = await firebase.database().ref('shared').child(sharedId).get();
+        if(thisShare.exists())
+            throw new BadRequestError('This short url already exists');
+    }
     
-    await movieRef.update({ sharedId });
-    await firebase.database().ref('shared').child(sharedId).set({
+    firebase.database().ref('shared').child(sharedId).set({
         user: req.currentUser?.id,
         movie: movieId
+    }).then(async () => {
+        await movieRef.update({ sharedId });
+        return res.status(200).send({
+            success: true,
+            sharedId
+        });
+    }).catch(() => {
+        throw new BadRequestError('This short url is invalid');
     });
-
-    return res.status(200).send({
-        success: true,
-        sharedId
-    });
+    
 });
 
 // Delete
