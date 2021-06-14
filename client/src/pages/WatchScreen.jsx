@@ -11,7 +11,7 @@ import VideoPlayer from './../components/WatchScreen/VideoPlayer';
 import VideoControl from './../components/WatchScreen/VideoControl';
 
 import { Debug } from '../utils/logger';
-import { WatchInit } from '../store/actions/watch.action';
+import { WatchInit, WatchSetFullScreen } from '../store/actions/watch.action';
 
 function WatchScreen(props) {
     Debug(`[App][MainScreen][WatchScreen] Render`);
@@ -45,6 +45,7 @@ function WatchScreen(props) {
         document.addEventListener('mousemove', onMouseAction);
         document.addEventListener('click', onMouseAction);
         document.addEventListener('keydown', onKeyboardPress);
+        document.addEventListener('fullscreenchange', onFullScreenChange);
 
         return () => {
             hideControls.cancel();
@@ -52,6 +53,7 @@ function WatchScreen(props) {
             document.removeEventListener('mousemove', onMouseAction);
             document.removeEventListener('click', onMouseAction);
             document.removeEventListener('keydown', onKeyboardPress);
+            document.removeEventListener('fullscreenchange', onFullScreenChange);
         }
     // eslint-disable-next-line
     }, [showControls])
@@ -75,6 +77,14 @@ function WatchScreen(props) {
                 break;
         }
     }
+
+    const onFullScreenChange = (e) => {
+        if (document.fullscreenElement) {
+            dispatch(WatchSetFullScreen(true));
+        } else {
+            dispatch(WatchSetFullScreen(false));
+        }
+      }
 
     useEffect(() => {
         // eslint-disable-next-line

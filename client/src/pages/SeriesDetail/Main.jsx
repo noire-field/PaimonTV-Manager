@@ -47,6 +47,7 @@ function Main(props) {
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
+                backgroundAttachment: 'fixed',
                 filter: 'blur(4px) brightness(50%)',
                 WebkitFilter: 'blur(4px) brightness(50%)'
             }}/>
@@ -54,9 +55,9 @@ function Main(props) {
                 <div className="container py-3">
                     <div className="row">
                         <div className="col-lg-5 d-flex justify-content-center mb-3">
-                            <ReactImageAppear src={movie.thumbnail} className="shadow w-100 max-width-100" showLoader={false} placeholderStyle={{ backgroundColor: 'transparent' }}/>
+                            <ReactImageAppear src={movie.thumbnail} className="shadow width-100 rounded-1 max-width-100" showLoader={false} placeholderStyle={{ backgroundColor: 'transparent' }}/>
                         </div>
-                        <div className="col-lg-7 pt-3 text-white">
+                        <SeriesDetail className="col-lg-7 pt-3 text-white">
                             <Title className="mb-2 line-height-1">{movie.title} <YearPlace>{movie.year}</YearPlace></Title>
                             <Subtitle className="mb-2 line-height-1">{movie.subTitle}</Subtitle>
                             <div className="mt-4 d-flex justify-content-start align-items-center">
@@ -69,7 +70,7 @@ function Main(props) {
                                 })
                             }
                             </EpisodeList>
-                        </div>
+                        </SeriesDetail>
                     </div>
                 </div>
             </MainContainer>
@@ -130,8 +131,18 @@ const YearPlace = styled.span`
 
 const EpisodeList = styled.div`
     width: 100%;
-    height: 450px;
     overflow: auto;
+
+    @media (min-width: 780px) { 
+        height: 450px;
+    }
+`;
+
+const SeriesDetail = styled.div`
+    @media (max-width: 780px) { 
+        background: rgba(0, 0, 0, .35);
+        border-radius: 5px;
+    }
 `;
 
 export default React.memo(Main);

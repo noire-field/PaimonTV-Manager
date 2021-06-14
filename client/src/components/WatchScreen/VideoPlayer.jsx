@@ -19,6 +19,7 @@ function VideoPlayer(props) {
     const seek = useSelector(state => state.watch.seek);
     const volume = useSelector(state => state.watch.volume);
     const movieId = useSelector(state => state.shared.movie.id);
+    const isFullScreen = useSelector(state => state.watch.fullscreen);
 
     useEffect(() => {
         if(!seek.required) return;
@@ -53,14 +54,26 @@ function VideoPlayer(props) {
         history.push(`/shared/${movieId}`);
     }
 
+    const onToggleFullScreen = () => {
+        const element = document.querySelector("#root");
+
+        if(!isFullScreen)
+            element.requestFullscreen().then(() => {}).catch((e) => {
+                alert("Không thể vào chế độ toàn màn hình, có thể bạn chưa cho phép");
+            })
+        else document.exitFullscreen();
+    }
+
     return (
-        <ReactPlayer 
-            ref={playerRef}
-            style={{ margin: 0, padding: 0, position: 'relative' }} height='100%' width='100%'
-            /*onPlay={onPlay} onStart={onStart} onPause={onPause}*/ onProgress={onProgress}  onBuffer={onBuffer} onBufferEnd={onBufferEnd} onEnded={onEnded}
-            playing={isPlaying} volume={volume}
-            url={videoUrl}
-        />
+        <div onDoubleClick={onToggleFullScreen}>
+            <ReactPlayer 
+                ref={playerRef}
+                style={{ margin: 0, padding: 0, position: 'relative' }} height='100%' width='100%'
+                /*onPlay={onPlay} onStart={onStart} onPause={onPause}*/ onProgress={onProgress}  onBuffer={onBuffer} onBufferEnd={onBufferEnd} onEnded={onEnded}
+                playing={isPlaying} volume={volume}
+                url={videoUrl}
+            />
+        </div>
     )
 }
 
