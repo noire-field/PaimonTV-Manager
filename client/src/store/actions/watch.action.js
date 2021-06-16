@@ -62,3 +62,10 @@ export function WatchReset() {
         type: Actions.WATCH_RESET
     }
 }
+
+export function WatchSetFullScreen(fullscreen) {
+    return {
+        type: Actions.WATCH_SET_FULLSCREEN,
+        fullscreen
+    }
+}

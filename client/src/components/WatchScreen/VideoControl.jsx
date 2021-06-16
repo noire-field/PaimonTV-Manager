@@ -26,6 +26,7 @@ function VideoPlayer(props) {
     const volume = useSelector(state => state.watch.volume); 
     const muted = useSelector(state => state.watch.muted); 
     const movieId = useSelector(state => state.shared.movie.id);
+    const isFullScreen = useSelector(state => state.watch.fullscreen);
 
     const onClickBack = () => {
         history.push(`/shared/${movieId}`);
@@ -71,8 +72,14 @@ function VideoPlayer(props) {
         dispatch(WatchSetVolume(volume));
     }, 10), []);
 
-    const onClickFullScreen = () => {
-        document.querySelector("#root").requestFullscreen();
+    const onToggleFullScreen = () => {
+        const element = document.querySelector("#root");
+
+        if(!isFullScreen)
+            element.requestFullscreen().then(() => {}).catch((e) => {
+                alert("Không thể vào chế độ toàn màn hình, có thể bạn chưa cho phép");
+            })
+        else document.exitFullscreen();
     }
 
     return (
@@ -98,7 +105,7 @@ function VideoPlayer(props) {
                         <VolumeIcon className={`fas ${ muted || volume <= 0 ? 'fa-volume-mute' : volume >= 0.35 ? 'fa-volume-up' : 'fa-volume-down' }`}></VolumeIcon>
                         <VolumeSlider min={0} max={1} step={0.1} value={muted ? 0 : volume} onChange={OnVolumeSliderChange}/>
                         <VideoTimer>{ DurationSecondToText(sliding ? progress : video.progress) } <span className="text-muted">/</span> { DurationSecondToText(video.duration) }</VideoTimer>
-                        <FullScreenButton onClick={onClickFullScreen} className="fas fa-expand"></FullScreenButton>
+                        <FullScreenButton onClick={onToggleFullScreen} className={isFullScreen ? `fas fa-compress` : `fas fa-expand`}></FullScreenButton>
                     </ControlsEnd>
                 </Controls>
             </Wrapper>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Redirect, useHistory, useParams } from 'react-router-dom';
 
@@ -8,7 +8,7 @@ import { Debug } from './../../utils/logger';
 import { AppSetLoading } from './../../store/actions/app.action';
 import { UserFetchData } from './../../store/actions/user.action';
 import ErrorList from '../../components/ErrorList';
-import { GenerateEpisodeID } from '../../utils/movies';
+import { GenerateEpisodeMeta } from '../../utils/movies';
 
 function AddEpisode(props) {
     const { movieId } = useParams();
@@ -21,9 +21,9 @@ function AddEpisode(props) {
     
     const movie = moviesList[movieId];
 
-    const generatedID = GenerateEpisodeID(movie.episodes || null);
-    const [episodeId, setEpisodeID] = useState(generatedID);
-    const [title, setTitle] = useState(`Episode #${generatedID} [p]`);
+    const generatedData =  useMemo(() => GenerateEpisodeMeta(movie.episodes || null), [movie.episodes]);
+    const [episodeId, setEpisodeID] = useState(generatedData.id);
+    const [title, setTitle] = useState(`Tập ${generatedData.id} [${generatedData.resolution}]`);
     const [duration, setDuration] = useState(0);
     const [fileUrl, setFileUrl] = useState("");
     const [status, setStatus] = useState(0);

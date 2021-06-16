@@ -1,3 +1,5 @@
+export const REGEX_RESOLUTION = /\[(\d{3,4}p)\]\s?/gi;
+
 
 export function MoviesToArray(movies) {
     const moviesArray = [];
@@ -81,7 +83,48 @@ export function GetEpisodeCompletedRate(episode) {
     return Math.max(Math.min(Math.round(episode.progress / episode.duration * 100), 100), 0);
 }
 
-export function GenerateEpisodeID(episodes) {
-    if(!episodes) return 1;
-    return Object.keys(episodes).length + 1;
+export function GenerateEpisodeMeta(episodes) {
+    const data = {
+        id: 1,
+        resolution: ''
+    }
+
+    if(!episodes) return data;
+
+    var latestID = 0, latestEp = null;
+
+    for(let key of Object.keys(episodes)) {
+        const epId = Number(key.substr(2));
+        if(epId <= latestID)
+            continue;
+
+        latestID = epId;
+        latestEp = episodes[key];
+    }
+
+    if(latestEp) {
+        data.id = latestID + 1;
+
+        const matches = new RegExp(REGEX_RESOLUTION).exec(latestEp.title);
+        if(matches && matches.length >= 2)
+            data.resolution =  matches[1];
+    }
+
+    return data;
+}
+
+export function ExtractResolutionFromName(text) {
+    const data = {
+        title: text,
+        resolution: ''
+    }
+
+    const matches = new RegExp(REGEX_RESOLUTION).exec(text);
+
+    if(matches && matches.length >= 2) {
+        data.title = text.replaceAll(matches[0], '');
+        data.resolution = matches[1];
+    }
+
+    return data
 }

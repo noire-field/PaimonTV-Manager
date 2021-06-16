@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
 
-import { DurationSecondToText } from './../../utils/movies';
+import { DurationSecondToText, ExtractResolutionFromName } from './../../utils/movies';
 
 import { Debug } from '../../utils/logger';
 
@@ -11,11 +11,17 @@ const EpisodeItem = (props) => {
     var remainDuration = DurationSecondToText(props.episode.duration - props.episode.progress);
     var durationProgress = Math.round((props.episode.progress / props.episode.duration) * 100);
 
+    const extractedData = useMemo(() => ExtractResolutionFromName(props.episode.title), [props.episode.title]);
+
     return (
         <EpisodeContainer onClick={props.onEpisodeClick.bind(this, props.index, props.episode)}>
             <EpisodeInfo>
-                <h4 className="mb-0">{props.episode.title}</h4>
-                <h5 className="mb-0">{durationProgress >= 100 ? '--:--' : remainDuration}</h5>
+                <EpisodeTitle className="mb-0">{extractedData.title}</EpisodeTitle>
+                <EpisodeMeta>
+                    {extractedData.resolution.length > 0 && 
+                    <h5 className="mb-0 text-danger">{extractedData.resolution}</h5>}
+                    <h5 className="mb-0">{durationProgress >= 100 ? '--:--' : remainDuration}</h5>
+                </EpisodeMeta>
             </EpisodeInfo>
             <EpisodeProgress style={{ width: `${durationProgress}%` }}></EpisodeProgress>
         </EpisodeContainer>
@@ -71,23 +77,14 @@ const EpisodeProgress = styled.div`
     background-color: #d9534f;
 `;
 
+const EpisodeTitle = styled.h4`
+    line-height: 0.85em;
+`;
 
-/*
-const styles = StyleSheet.create({
-    container: {
-        
-    },
-    wrapper: {
-        
-    },
-    wrapperUnselected: {
-        borderColor: 'rgb(100,100,100)',
-        backgroundColor: 'rgba(50,50,50,0.5)'
-    },
-    wrapperSelected: {
-        
-    },
-
-});*/
+const EpisodeMeta = styled.div`
+    display: flex;
+    justify-content: space-between;
+    min-width: 130px;
+`;
 
 export default React.memo(EpisodeItem);

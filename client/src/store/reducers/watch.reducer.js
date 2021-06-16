@@ -17,7 +17,8 @@ const initState = {
         progress: 0.0,
         duration: 1420,
     },
-    volume: 1.0
+    volume: 1.0,
+    fullscreen: false
 }
 
 const reducer = function(state = initState, action) {
@@ -57,6 +58,8 @@ const reducer = function(state = initState, action) {
         case Actions.WATCH_RESET:
             let volume = state.volume;
             return { ...initState, volume };
+        case Actions.WATCH_SET_FULLSCREEN:
+            return { ...state, fullscreen: action.fullscreen }
         default: return state;
     }
 }

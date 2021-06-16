@@ -19,6 +19,7 @@ export const WATCH_REQUIRE_SEEK = 'WatchRequireSeek';
 export const WATCH_SET_BUFFERING = 'WatchSetBuffering';
 export const WATCH_SET_VOLUME = 'WatchSetVolume';
 export const WATCH_RESET = 'WatchReset';
+export const WATCH_SET_FULLSCREEN = 'WatchSetFullScreen';
 
 export const SHARED_SET_LOADED = 'SharedSetLoaded';
 export const SHARED_UPDATE_EPISODE_PROGRESS = 'SharedUpdateEpisodeProgress';
