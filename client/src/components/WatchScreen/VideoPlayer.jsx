@@ -65,7 +65,7 @@ function VideoPlayer(props) {
     }
 
     return (
-        <div onDoubleClick={onToggleFullScreen}>
+        <div onDoubleClick={onToggleFullScreen} className="h-100">
             <ReactPlayer 
                 ref={playerRef}
                 style={{ margin: 0, padding: 0, position: 'relative' }} height='100%' width='100%'
