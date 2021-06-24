@@ -15,12 +15,15 @@ function MovieList(props) {
             </CSSTransition>
         );
     })
-    return (
+    
+    return ( 
         <TransitionGroup className={`movie-list ${props.className}`}>
             {props.preList}
             {renderedItems}
         </TransitionGroup>
     )
 }
+
+
 
 export default React.memo(MovieList);
