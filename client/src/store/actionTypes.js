@@ -24,3 +24,5 @@ export const WATCH_SET_FULLSCREEN = 'WatchSetFullScreen';
 export const SHARED_SET_LOADED = 'SharedSetLoaded';
 export const SHARED_UPDATE_EPISODE_PROGRESS = 'SharedUpdateEpisodeProgress';
 export const SHARED_RESET = 'SharedReset';
+
+export const HOME_SET_LOADED = 'HomeSetLoaded';

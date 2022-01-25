@@ -8,11 +8,12 @@ import MyMovies from '../pages/MyMovies';
 import Queue from '../pages/Queue';
 import Logs from '../pages/Logs';
 import SeriesDetail from '../pages/SeriesDetail';
+import Homepage from '../pages/Homepage';
 import { Debug } from '../utils/logger';
 
 function MainScreen(props) {
     const location = useLocation();
-    const isGuestWatch = location.pathname.startsWith('/shared') ? true : false;
+    const isGuestWatch = (location.pathname.startsWith('/shared') || location.pathname.startsWith('/home')) ? true : false;
 
     Debug(`[App][MainScreen] Render`);
     
@@ -23,7 +24,7 @@ function MainScreen(props) {
                 <CSSTransition key={location.key} classNames="fade-in" timeout={300}>
                     <Switch location={location}>
                         <Route exact path="/">
-                            <Redirect to="/library"/>
+                            <Redirect to="/home"/>
                         </Route>
                         <Route path="/library">
                             <Library/>
@@ -36,6 +37,9 @@ function MainScreen(props) {
                         </Route>
                         <Route path="/logs">
                             <Logs/>
+                        </Route>
+                        <Route exact path="/home">
+                            <Homepage/>
                         </Route>
                         <Route path="/shared/:seriesId">
                             <SeriesDetail/>

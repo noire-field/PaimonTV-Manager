@@ -43,7 +43,7 @@ function App() {
             })
         } else { // No Key? Not Logged?
             // A little hack
-            if(window.location.pathname.startsWith('/shared')) {
+            if(window.location.pathname.startsWith('/shared') || window.location.pathname.startsWith('/home')) {
                 dispatch(AppSetLoading(false));
                 dispatch(UserGuestSignIn());
                 dispatch(AppSetState(2));
