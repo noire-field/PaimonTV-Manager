@@ -1,4 +1,5 @@
 import './assets/scss/styles.scss';
+import "swiper/swiper.min.css";
 
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,7 +16,6 @@ import { UserSignIn, UserFetchData, UserGuestSignIn } from './store/actions/user
 import LoginScreen from './pages/LoginScreen';
 import MainScreen from './containers/MainScreen';
 import Loading from './components/Loading';
-
 
 function App() {
     const appState = useSelector(state => state.app.appState);

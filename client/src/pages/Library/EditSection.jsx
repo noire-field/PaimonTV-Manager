@@ -10,7 +10,7 @@ import { AppSetLoading } from './../../store/actions/app.action';
 import { UserFetchData } from './../../store/actions/user.action';
 import { SeriesSetSingle } from './../../store/actions/series.action';
 
-import MovieList from './../../components/MovieList';
+import MovieListScroll from './../../components/MovieListScroll';
 import MovieItem from './../../components/MovieItem';
 import ErrorList from './../../components/ErrorList';
 import { Debug } from '../../utils/logger';
@@ -189,7 +189,7 @@ function EditSection(props) {
                 <h4 className="text-white ms-2 me-2">Movies</h4>
                 <Link to="/my-movies" className="btn btn-danger pbg-accent btn-sm px-2 py-1"><i className="fas fa-edit me-1"></i>Add Movie</Link>
             </div>
-            <MovieList title='Movies' movies={movies} onMovieClick={onMovieClick}/>
+            <MovieListScroll title='Movies' movies={movies} onMovieClick={onMovieClick}/>
             { id !== 'my-list' && (
             <div>
                 <h4 className="text-white ms-2 me-2">Others</h4>
