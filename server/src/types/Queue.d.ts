@@ -27,6 +27,7 @@ export interface QueueData {
 export const enum QueueStatus {
     Ready = 'Ready',
     Verifying = 'Verifying',
+    Transcoding = 'Transcoding',
     Downloading = 'Downloading',
     Uploading = 'Uploading'
 }

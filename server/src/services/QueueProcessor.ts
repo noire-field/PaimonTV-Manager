@@ -6,6 +6,7 @@ import fs from 'fs';
 import { getVideoDurationInSeconds } from 'get-video-duration';
 import AWS from 'aws-sdk';
 import firebase from 'firebase';
+import ffmpeg from 'fluent-ffmpeg';
 
 import { s3, S3_BUCKET } from './../utils/aws';
 import { storage as gcStorage, GCS_BUCKET } from './../utils/gcloud';
@@ -212,9 +213,41 @@ class QueueProcessor {
      
         if(!second) return;
 
-        await await this.firebaseDB.ref('queue').child(this.item.id).child('status').set(2);
+        // If it's mp4, upload. If it's ts, transcode before upload.
+        if(this.GetUrlExtension(this.episode.url.toLowerCase()) == 'ts') {
+            await this.firebaseDB.ref('queue').child(this.item.id).child('status').set(2);
+            this.StartTranscode();
+        } else {
+            await this.firebaseDB.ref('queue').child(this.item.id).child('status').set(3);
+            this.StartUpload();
+        }
+    }
 
-        this.StartUpload();
+    private async StartTranscode() {
+        this.status = QueueStatus.Transcoding;
+
+        ffmpeg(this.GetFileUrl()).videoCodec('libx264').audioCodec('aac')
+            .on('progress', (progress) => {
+                this.firebaseDB.ref('queue').child(`${this.item.id}/progress`).set(Math.round(progress.percent || 0));
+            }).on('error', async (err) => {
+                fs.unlinkSync(this.GetFileUrl());
+
+                try { fs.unlinkSync(`${this.GetFileUrl()}_CONVERTED`); }
+                catch(e) {}
+
+                this.Log(`Deleted file: ${this.item.id}`);
+                this.ProcessError(`Unable to transcode video file.`)
+            }).on('end', () => {
+                setTimeout(async () => {
+                    // Swap the file
+                    fs.unlinkSync(this.GetFileUrl());
+                    fs.renameSync(`${this.GetFileUrl()}_CONVERTED`, this.GetFileUrl());
+
+                    // Upload the file
+                    await this.firebaseDB.ref('queue').child(this.item.id).child('status').set(3);
+                    this.StartUpload();
+                }, 1000);
+            }).save(`${this.GetFileUrl()}_CONVERTED`);
     }
 
     private async StartUpload() {
@@ -239,7 +272,7 @@ class QueueProcessor {
                         }
         
                         // Upload Completed
-                        await this.firebaseDB.ref('queue').child(this.item.id).child('status').set(3);
+                        await this.firebaseDB.ref('queue').child(this.item.id).child('status').set(4);
         
                         const url = data.Location;
                         this.Log(`Upload completed`);
@@ -289,7 +322,7 @@ class QueueProcessor {
                         cacheControl: 'max-age=0'
                     });
                   
-                    await this.firebaseDB.ref('queue').child(this.item.id).child('status').set(3);
+                    await this.firebaseDB.ref('queue').child(this.item.id).child('status').set(4);
         
                     const url = targetFile.publicUrl();
                     this.Log(`Upload completed`);
@@ -342,7 +375,7 @@ class QueueProcessor {
 
     private async ProcessError(message: string) {
         const promises = [
-            this.firebaseDB.ref('queue').child(this.item.id).child('status').set(4),
+            this.firebaseDB.ref('queue').child(this.item.id).child('status').set(5),
             this.firebaseDB.ref('users').child(`${this.item.userId}/logs/`).push({
                 message: `Processing Error: ${message}`,
                 reference: `Movie: ${this.movie.title} / Episode: ${this.episode.title}`,
@@ -375,6 +408,11 @@ class QueueProcessor {
 
     private BytesToMB(bytes: number) {
         return bytes / 1048576;
+    }
+
+    private GetUrlExtension(url: string) {
+        // @ts-ignore
+        return url.split(/[#?]/)[0].split('.').pop().trim() || null;
     }
 }
 

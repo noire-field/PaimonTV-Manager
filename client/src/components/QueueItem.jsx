@@ -8,9 +8,10 @@ function QueueItem(props) {
     switch(status) {
         case 0: statusText = 'Waiting'; break;
         case 1: statusText = `Downloading ${progress || 0}%`; break;
-        case 2: statusText = `Uploading ${progress || 0}%`; break;
-        case 3: statusText = 'Completed'; break;
-        case 4: statusText = 'Failed'; break;
+        case 2: statusText = `Transcoding ${progress || 0}%`; break;
+        case 3: statusText = `Uploading ${progress || 0}%`; break;
+        case 4: statusText = 'Completed'; break;
+        case 5: statusText = 'Failed'; break;
         default: statusText = 'Unknown'; break;
     }
 

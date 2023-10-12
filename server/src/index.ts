@@ -15,18 +15,12 @@ const firebaseConfig = {
     databaseURL: process.env.FB_DBURL
 }
 
-const firebaseAuth = {
-    user: process.env.FB_AUTH_USER!,
-    pass: process.env.FB_AUTH_PASS!
-}
-
 const AppStart = async () => {
     // Firebase Authentication
     const firebaseApp = firebase.initializeApp(firebaseConfig);
     var useCredential: firebase.auth.UserCredential;
     try {
-        useCredential = await firebaseApp.auth().signInWithEmailAndPassword(firebaseAuth!.user, firebaseAuth!.pass);
-        
+        useCredential = await firebaseApp.auth().signInWithCustomToken(process.env.FB_AUTH_TOKEN)
     } catch(err) {
         console.log(`Unable to authenticate with Firebase: `);
         console.log(err);
