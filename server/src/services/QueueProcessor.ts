@@ -1,4 +1,3 @@
-
 import http, { ClientRequest, IncomingMessage } from 'http';
 import https from 'https';
 import _ from 'lodash';
@@ -225,14 +224,19 @@ class QueueProcessor {
 
     private async StartTranscode() {
         this.status = QueueStatus.Transcoding;
+	this.Log(`Start transcoding...`);
 
-        ffmpeg(this.GetFileUrl()).videoCodec('libx264').audioCodec('aac')
+        ffmpeg(fs.createReadStream(this.GetFileUrl())).videoCodec('libx264').audioCodec('aac')
             .on('progress', (progress) => {
                 this.firebaseDB.ref('queue').child(`${this.item.id}/progress`).set(Math.round(progress.percent || 0));
-            }).on('error', async (err) => {
+            }).on('error', async (err, stdout, stderr) => {
+		console.log(err);
+		console.log(stdout);
+		console.log(stderr);
+
                 fs.unlinkSync(this.GetFileUrl());
 
-                try { fs.unlinkSync(`${this.GetFileUrl()}_CONVERTED`); }
+                try { fs.unlinkSync(`${this.GetFileUrl()}.mp4`); }
                 catch(e) {}
 
                 this.Log(`Deleted file: ${this.item.id}`);
@@ -241,13 +245,13 @@ class QueueProcessor {
                 setTimeout(async () => {
                     // Swap the file
                     fs.unlinkSync(this.GetFileUrl());
-                    fs.renameSync(`${this.GetFileUrl()}_CONVERTED`, this.GetFileUrl());
+                    fs.renameSync(`${this.GetFileUrl()}.mp4`, this.GetFileUrl());
 
                     // Upload the file
                     await this.firebaseDB.ref('queue').child(this.item.id).child('status').set(3);
                     this.StartUpload();
                 }, 1000);
-            }).save(`${this.GetFileUrl()}_CONVERTED`);
+            }).save(`${this.GetFileUrl()}.mp4`);
     }
 
     private async StartUpload() {
@@ -415,5 +419,3 @@ class QueueProcessor {
         return url.split(/[#?]/)[0].split('.').pop().trim() || null;
     }
 }
-
-export default QueueProcessor;
