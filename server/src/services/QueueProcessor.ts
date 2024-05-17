@@ -419,3 +419,5 @@ class QueueProcessor {
         return url.split(/[#?]/)[0].split('.').pop().trim() || null;
     }
 }
+
+export default QueueProcessor;
