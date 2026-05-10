@@ -128,3 +128,62 @@ export function ExtractResolutionFromName(text) {
 
     return data
 }
+
+/**
+ * True if the URL's last path segment looks like an episode file: digits + dot + extension
+ * (e.g. .../01.mp4). Use this to validate batch URLs without {n}/{nn}/{nnn} placeholders.
+ */
+export function urlHasEpisodeDotFilename(template) {
+    const s = template && String(template).trim();
+    if (!s || !/^https?:\/\//i.test(s)) return false;
+    try {
+        const u = new URL(s);
+        const parts = u.pathname.split('/').filter(Boolean);
+        if (!parts.length) return false;
+        return /^\d+\.[^/]+$/.test(parts[parts.length - 1]);
+    } catch {
+        return false;
+    }
+}
+
+/**
+ * For http(s) URLs only: if the last pathname segment is digits.extension (e.g. 01.mp4),
+ * replace that numeric part with the episode number (padding ≥ original digit count).
+ * Other numbers elsewhere in the path are left alone.
+ */
+function replaceTrailingEpisodeFilenameDigits(urlStr, episodeNum) {
+    try {
+        const u = new URL(urlStr);
+        const parts = u.pathname.split('/').filter(Boolean);
+        if (parts.length === 0) return urlStr;
+        const last = parts[parts.length - 1];
+        const m = last.match(/^(\d+)\.(.+)$/);
+        if (!m) return urlStr;
+        const [, digitStr, ext] = m;
+        const width = Math.max(digitStr.length, String(episodeNum).length);
+        const padded = PadTimeText(episodeNum, width);
+        parts[parts.length - 1] = `${padded}.${ext}`;
+        u.pathname = '/' + parts.join('/');
+        return u.toString();
+    } catch {
+        return urlStr;
+    }
+}
+
+/** Replace {nnn}, {nn}, {n}; then for http(s) URLs, episode-shaped .../NN.ext last segment. */
+export function applyEpisodeTemplate(template, episodeNum) {
+    if (template == null || template === '') return '';
+    const n = String(episodeNum);
+    const nn = PadTimeText(episodeNum, 2);
+    const nnn = PadTimeText(episodeNum, 3);
+    let result = template
+        .replace(/\{nnn\}/g, nnn)
+        .replace(/\{nn\}/g, nn)
+        .replace(/\{n\}/g, n);
+
+    if (/^https?:\/\//i.test(result)) {
+        result = replaceTrailingEpisodeFilenameDigits(result, episodeNum);
+    }
+
+    return result;
+}

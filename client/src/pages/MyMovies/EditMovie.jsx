@@ -150,6 +150,11 @@ function EditMovie(props) {
         history.push(`/my-movies/${movieId}/add-episode`);
     }
 
+    const onClickAddBatchEpisode = (e) => {
+        e.preventDefault();
+        history.push(`/my-movies/${movieId}/add-batch-episode`);
+    }
+
     const episodesArray = EpisodesToArray(movie.episodes);
 
     const renderedEpisodes = episodesArray.length > 0 ? episodesArray.map((ep) => {
@@ -286,9 +291,10 @@ function EditMovie(props) {
             </div>
             <div className="row">
                 <div className="col-lg-12">
-                    <div className="d-flex justify-content-start align-items-center mb-2">
-                        <h3 className="me-2">Movie Episodes</h3>
-                        <button onClick={onClickAddEpisode} className="btn btn-danger pbg-accent btn-sm px-2 py-1"><i className="fas fa-plus me-1"></i>Add episode</button>
+                    <div className="d-flex justify-content-start align-items-center flex-wrap gap-2 mb-2">
+                        <h3 className="me-2 mb-0">Movie Episodes</h3>
+                        <button type="button" onClick={onClickAddEpisode} className="btn btn-danger pbg-accent btn-sm px-2 py-1"><i className="fas fa-plus me-1"></i>Add episode</button>
+                        <button type="button" onClick={onClickAddBatchEpisode} className="btn btn-outline-light btn-sm px-2 py-1"><i className="fas fa-layer-group me-1"></i>Add batch episode</button>
                     </div>
                     <div className="table-responsive">
                         <table className="table table-striped table-hover table-bordered table-dark">

@@ -6,6 +6,7 @@ import Main from './MyMovies/Main';
 import AddMovie from './MyMovies/AddMovie';
 import EditMovie from './MyMovies/EditMovie';
 import AddEpisode from './MyMovies/AddEpisode';
+import AddBatchEpisode from './MyMovies/AddBatchEpisode';
 import EditEpisode from './MyMovies/EditEpisode';
 import { Debug } from '../utils/logger';
 
@@ -25,6 +26,9 @@ function MyMovies(props) {
                         </Route>
                         <Route path={`${match.path}/:movieId/edit`}>
                             <EditMovie/>
+                        </Route>
+                        <Route path={`${match.path}/:movieId/add-batch-episode`}>
+                            <AddBatchEpisode/>
                         </Route>
                         <Route path={`${match.path}/:movieId/add-episode`}>
                             <AddEpisode/>
